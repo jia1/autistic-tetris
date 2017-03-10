@@ -30,8 +30,7 @@ public class PlayerSkeleton {
     public static void main(String[] args) throws IOException {
         State s = new State();
         new TFrame(s);
-        double[] weights = PlayerTraining.loadWeights();
-        PlayerSkeleton p = new PlayerSkeleton(weights);
+        PlayerSkeleton p = new PlayerSkeleton(Constants.WEIGHTS);
         while (!s.hasLost()) {
             s.makeMove(p.pickMove(s, s.legalMoves()));
             s.draw();
@@ -45,4 +44,17 @@ public class PlayerSkeleton {
         System.out.println("You have completed " + s.getRowsCleared() + " rows.");
     }
 
+
+    public static class Constants {
+    
+        public static final int FEATURE_COUNT = 8;
+        
+        public static final int SEARCH_TRIALS = 100;
+        public static final int SEARCH_DEPTH = 5;
+        
+        // IMPORTANT: Replace with completed weights before submission
+        //public static double[] WEIGHTS = new double[]{0, 0, 0, 0, 0, 0, 0, 0};
+        public static double[] WEIGHTS = PlayerTraining.loadWeights();
+        
+    }
 }
