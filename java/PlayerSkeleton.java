@@ -3,17 +3,25 @@ import java.util.Random;
 
 public class PlayerSkeleton {
 
+    // Picks a move to carry out based on the current state of the board.
+    //
+    // What it does:
+    // For every legal move, evaluate the resultant state of the board with a
+    // heuristic. The move which gives rise to the highest score is picked as
+    // the next move.
     public int pickMove(State s, int[][] legalMoves) {
         int[][] field = copyField(s.getField());
-        // convert field to 0s and 1s
+        // Convert field to 0s and 1s
         for (int row = 0; row < field.length; row++) {
             for (int col = 0; col < field[row].length; col++) {
                 field[row][col] = field[row][col] == 0 ? 0 : 1;
-            }   
+            }
         }
         int nextPiece = s.getNextPiece();
         double bestScore = Double.NEGATIVE_INFINITY;
         int bestMove = 0;
+        // Among all possible moves, find the best move which gives
+        // rise to the highest meta-heuristic score.
         for (int i = 0; i < legalMoves.length; i++) {
             int[][] nextField = applyMove(copyField(field), nextPiece, legalMoves[i]);
             double score = metaHeuristic(nextField);
@@ -25,8 +33,24 @@ public class PlayerSkeleton {
         return bestMove;
     }
 
-    // field NEED NOT need to have its completed rows cleared
-    // Original field will not be kept
+    // =======================================
+    // === Heuristics ===
+    // =======================================
+
+    // Meta-heuristic
+    // This function serves as a "booster" to improve the performance of the
+    // original heuristic we trained.
+    //
+    // What it does:
+    // For a board, use the original heuristic to play the game for a certain
+    // number of moves, recording the number of rows cleared.
+    // Repeat this trial a certain number of times, then return the total number
+    // of rows cleared as the score.
+    //
+    // The number of trials is specified by SEARCH_TRIALS, and the number of
+    // moves played per trial is defined by SEARCH_DEPTH. These are parameters
+    // that can be changed to tweak the running time as well as the accuracy of
+    // the heuristic
     public double metaHeuristic(int[][] field) {
         if (field[0][0] == -1) {
             // game over
@@ -49,6 +73,8 @@ public class PlayerSkeleton {
         return totalRowsCleared;
     }
 
+    // Chooses the legal move which gives rise to the best heuristic score, then
+    // apply it to the board
     public int[][] moveByHeuristic(int[][] field, int piece) {
         int[][] legalMoves = Constants.LEGAL_MOVES[piece];
 
@@ -76,6 +102,10 @@ public class PlayerSkeleton {
         return 0;
     }
 
+    // =======================================
+    // === Helper Functions ===
+    // =======================================
+
     // For a given field, piece and move, return a new field as a result
     // of that move.
     // Original field will not be kept
@@ -99,7 +129,8 @@ public class PlayerSkeleton {
         for (int i = 0; i < Constants.P_WIDTH[piece][orient]; i++) {
 
             // from bottom to top of brick
-            for (int h = height + Constants.P_BOTTOM[piece][orient][i]; h < height + Constants.P_TOP[piece][orient][i]; h++) {
+            for (int h = height + Constants.P_BOTTOM[piece][orient][i]; h < height
+                    + Constants.P_TOP[piece][orient][i]; h++) {
                 field[h][i + slot] = 1;
             }
         }
@@ -166,6 +197,10 @@ public class PlayerSkeleton {
         return result;
     }
 
+    // =======================================
+    // === Main Functions ===
+    // =======================================
+
     public static void main(String[] args) throws IOException {
         State s = new State();
         new TFrame(s);
@@ -190,6 +225,10 @@ public class PlayerSkeleton {
     private final double[] weights;
     private final Random rand = new Random();
 
+    // =======================================
+    // === Constants ===
+    // =======================================
+
     public static class Constants {
 
         public static final int FEATURE_COUNT = 8;
@@ -199,7 +238,7 @@ public class PlayerSkeleton {
 
         // IMPORTANT: Replace with completed weights before submission
         // public static double[] WEIGHTS =
-        //          new double[]{0, 0, 0, 0, 0, 0, 0, 0};
+        // new double[]{0, 0, 0, 0, 0, 0, 0, 0};
         public static double[] WEIGHTS = PlayerTraining.loadWeights();
 
         public static final int COLS = 10;
