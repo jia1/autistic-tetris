@@ -3,6 +3,15 @@ import java.util.Random;
 
 public class PlayerSkeleton {
 
+	public static int WEIGHT_INDEX_NUM_HOLES = 0; 
+	public static int WEIGHT_INDEX_NUM_ROWS_CLEARED = 1; 
+	public static int WEIGHT_INDEX_MAX_HEIGHT = 2; 
+	public static int WEIGHT_INDEX_AVG_HEIGHT = 3; 
+	public static int WEIGHT_INDEX_SURFACE_AREA = 4; 
+	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS = 5; 
+	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR = 6; 
+	public static int WEIGHT_INDEX_MAX_ADJ_DIFF = 7; 
+	
     // Picks a move to carry out based on the current state of the board.
     //
     // What it does:
@@ -93,61 +102,122 @@ public class PlayerSkeleton {
         return bestField;
     }
 
+    // calculate heuristic for the resultant field after a move is applied
+    // resultant field refers to field BEFORE completed rows are cleared 
+    // if the resultant field terminates the game, value is -infinity
+    // else calculate heuristic as per normal 
     public double heuristic(int[][] field) {
+    	if (field[0][0] == -1) {
+            return Double.NEGATIVE_INFINITY;
+        }
+    	
+        return heuristic(field, weights);
+    }
+
+    public static double heuristic(int[][] field, double[] weights) {	
+    	// calculate height for each col and store in top array
+    	// each top element refers to height before rows are cleared 
     	int[] top = new int[Constants.COLS];
     	for(int c = 0; c < Constants.COLS; c++) {
     		top[c] = getTop(field, c); 
     	}
     	
-        return heuristic(field, top, weights);
+    	// calculate absolute height different between col i and col i+1 
+    	int[] topDiff = new int[top.length-1]; 
+    	for(int c = 0; c < top.length-1; c++) {
+    		topDiff[c] = Math.abs(top[c] - top[c+1]);  
+    	}
+    	
+    	// calculate each feature 
+    	int numHoles = numHoles(field, top); 
+    	int numRowsCleared = countCompletedRows(field);  
+    	int maxHeight = maxHeight(top, numRowsCleared); 
+    	double avgHeight = averageHeight(top, numRowsCleared);
+    	int surfaceArea = surfaceArea(topDiff); 
+    	double boardSmoothnessAbs = boardSmoothnessAbsolute(topDiff); 
+    	double boardSmoothnessSqr = boardSmoothnessSquared(topDiff); 
+    	int maxAdjacentDiff = maxAdjacentDiff(topDiff); 
+    	
+    	// calculate weighted sum of features 
+        return numHoles * weights[WEIGHT_INDEX_NUM_HOLES] 
+        	 + numRowsCleared * weights[WEIGHT_INDEX_NUM_ROWS_CLEARED] 
+             + maxHeight * weights[WEIGHT_INDEX_MAX_HEIGHT]
+             + avgHeight * weights[WEIGHT_INDEX_AVG_HEIGHT]
+             + surfaceArea * weights[WEIGHT_INDEX_SURFACE_AREA]
+             + boardSmoothnessAbs * weights[WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS]
+             + boardSmoothnessSqr * weights[WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR]
+             + maxAdjacentDiff * weights[WEIGHT_INDEX_MAX_ADJ_DIFF];
     }
+    
+    // calculate sum of size of holes 
+    public static int numHoles(int[][] field, int[] top) {
+    	int totalHoles = 0; 
+    	for (int c = 0; c < Constants.COLS; c++) {
+    		for (int r = 0; r < top[c] - 1; r++) {
+    			if (field[r][c] == 0) {
+    				totalHoles++; 
+    			}
+    		}
+    	}
+    	
+    	return totalHoles; 
+    }
+    
+    public static int maxHeight(int top[], int numRowsCleared) { 
+    	int maxHeight = top[0];  
+    	for (int i = 1; i < top.length; i++) {
+    		maxHeight = Math.max(maxHeight, top[i]); 
+    	}
 
-    public static double heuristic(int[][] field, int[] top, double[] weights) {
-        // Todo (YY): Implement
+    	return maxHeight - numRowsCleared; 
+    }
+    
+    public static double averageHeight(int top[], int numRowsCleared) { 
+    	double totalHeight = 0;
+    	for (int i = 0; i < top.length; i++) {
+    		totalHeight += top[i]; 
+    	}
+    	return totalHeight/Constants.COLS - numRowsCleared; 
+    }
+    
+    public static int surfaceArea(int[] topDiff) {
+    	// start with 1 because count the top part of the first column 
+    	int surfaceArea = 1; 
+    	for (int i = 0; i < topDiff.length; i++){ 
+    		// add 1 to count the top part of each column 
+    		surfaceArea += (topDiff[i] + 1); 
+    	}
     	
-        return 0;
+    	return surfaceArea; 
     }
     
-    public static int numHoles() {
-    	return 0; 
-    }
-    
-    public static int numRowsCleared(int[][] field) { 
+    public static double boardSmoothnessAbsolute(int[] topDiff) {
+    	double diffSum = 0; 
+    	for (int i = 0; i < topDiff.length; i++) {
+    		diffSum += topDiff[i]; 
+    	}
     	
-    	return 0; 
+    	return diffSum/Constants.COLS; 
     }
     
-    public static int maxHeight() { 
+    public static double boardSmoothnessSquared(int[] topDiff) {
+    	double squaredDiffSum = 0; 
+    	for (int i = 0; i < topDiff.length; i++) {
+    		squaredDiffSum += (topDiff[i] * topDiff[i]); 
+    	}
     	
-    	return 0; 
+    	return squaredDiffSum/Constants.COLS; 
     }
     
-    public static int averageHeight() { 
-    	return 0; 
+    public static int maxAdjacentDiff(int[] topDiff) {
+    	int maxDiff = topDiff[0]; 
+    	for (int i = 1; i < topDiff.length; i++) {
+    		maxDiff = Math.max(maxDiff, topDiff[i]); 
+    	}
+    	
+    	return maxDiff; 
     }
     
-    public static int surfaceArea() {
-    	return 0; 
-    }
-    
-    public static int boardSmoothnessAbsolute() {
-    	return 0; 
-    }
-    
-    public static int boardSmoothnessSquared() {
-    	return 0; 
-    }
-    
-    public static int maxAdjacentDiff() {
-    	return 0; 
-    }
-    
-    public static void heightDiff(int[] top, int col1, int col2) {
-    	// return height diff? 
-    	// maybe move into heuristics 
-    }
-    
-
     // =======================================
     // === Helper Functions ===
     // =======================================
@@ -246,7 +316,7 @@ public class PlayerSkeleton {
     // =======================================
     // === Main Functions ===
     // =======================================
-
+  
     public static void main(String[] args) throws IOException {
         State s = new State();
         new TFrame(s);
