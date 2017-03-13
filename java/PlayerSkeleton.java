@@ -94,13 +94,59 @@ public class PlayerSkeleton {
     }
 
     public double heuristic(int[][] field) {
-        return heuristic(field, weights);
+    	int[] top = new int[Constants.COLS];
+    	for(int c = 0; c < Constants.COLS; c++) {
+    		top[c] = getTop(field, c); 
+    	}
+    	
+        return heuristic(field, top, weights);
     }
 
-    public static double heuristic(int[][] field, double[] weights) {
+    public static double heuristic(int[][] field, int[] top, double[] weights) {
         // Todo (YY): Implement
+    	
         return 0;
     }
+    
+    public static int numHoles() {
+    	return 0; 
+    }
+    
+    public static int numRowsCleared(int[][] field) { 
+    	
+    	return 0; 
+    }
+    
+    public static int maxHeight() { 
+    	
+    	return 0; 
+    }
+    
+    public static int averageHeight() { 
+    	return 0; 
+    }
+    
+    public static int surfaceArea() {
+    	return 0; 
+    }
+    
+    public static int boardSmoothnessAbsolute() {
+    	return 0; 
+    }
+    
+    public static int boardSmoothnessSquared() {
+    	return 0; 
+    }
+    
+    public static int maxAdjacentDiff() {
+    	return 0; 
+    }
+    
+    public static void heightDiff(int[] top, int col1, int col2) {
+    	// return height diff? 
+    	// maybe move into heuristics 
+    }
+    
 
     // =======================================
     // === Helper Functions ===
