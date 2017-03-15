@@ -9,11 +9,12 @@ import java.util.Scanner;
 public class PlayerTraining {
 
     public static final String WEIGHTS_PATH = "weights.txt";
-    
+
     public static void main(String[] args) {
-        // Todo (T + JY): Add training for weights here
+        double bestWeights = GeneticAlgorithm.obtainBestWeights();
+        saveWeights(bestWeights);
     }
-    
+
     public static double[] loadWeights() {
         double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
         Path path = Paths.get(WEIGHTS_PATH);
