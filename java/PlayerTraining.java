@@ -11,8 +11,13 @@ public class PlayerTraining {
     public static final String WEIGHTS_PATH = "weights.txt";
 
     public static void main(String[] args) {
-        double bestWeights = GeneticAlgorithm.obtainBestWeights();
-        saveWeights(bestWeights);
+        double[] bestWeights = GeneticAlgorithm.obtainBestWeights();
+        try {
+            saveWeights(bestWeights);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public static double[] loadWeights() {
