@@ -5,6 +5,7 @@ import java.util.Random;
  * Acts as a single individual in the genetic algorithm.
  */
 public class Individual {
+    private double fitness = -1;
     private double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
 
     public static int PROB_PERCENT_MUTATE = 5;
@@ -14,9 +15,14 @@ public class Individual {
     public static int RAND_BOUND_MUTATE = 2*100/PROB_PERCENT_MUTATE;
 
 
+    public double getFitness() {
+        return fitness;
+    }
+
     public double[] getWeights() {
         return weights;
     }
+
     public void setWeights(double[] weights) {
         this.weights = weights;
     }
@@ -36,8 +42,12 @@ public class Individual {
      * Should be parallelized.
      */
     public double computeFitness() {
-        // TODO
-        return 0;
+        if (fitness >= 0) { // fitness was previously calculated
+            return fitness;
+        } else {
+            // TODO
+            return 0;
+        }
     }
 
     /*
