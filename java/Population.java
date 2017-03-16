@@ -30,8 +30,10 @@ public class Population {
      * Breed the parents, produce a child and mutate the child.
      */
     public Individual generateChild() {
-        // TODO
-        return null;
+        Individual[] parents = chooseParents();
+        Individual child = reproduce(parents);
+        child.mutate();
+        return child;
     }
 
     /*
