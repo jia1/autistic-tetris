@@ -11,6 +11,8 @@ public class Individual {
     public static double WEIGHT_BOUND_UPP = 1.0;
     public static double WEIGHT_BOUND_LOW = -1.0;
 
+    public static int RAND_BOUND_MUTATE = 2*100/PROB_PERCENT_MUTATE;
+
 
     public double[] getWeights() {
         return weights;
@@ -46,7 +48,7 @@ public class Individual {
     public void mutate() {
         Random randGen = new Random();
         for (int i = 0; i < weights.length; i++) {
-            int randNum = randGen.nextInt(2*100/PROB_PERCENT_MUTATE);
+            int randNum = randGen.nextInt(RAND_BOUND_MUTATE);
             if (randNum == 0) {
                 weights[i] += Math.min(WEIGHT_BOUND_UPP, randGen.nextDouble());
             } else if (randNum == 1) {
