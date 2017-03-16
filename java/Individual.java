@@ -19,6 +19,10 @@ public class Individual {
         return fitness;
     }
 
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
     public double getWeight(int index) {
         return weights[index];
     }
@@ -51,7 +55,7 @@ public class Individual {
      * Should be parallelized.
      */
     public double computeFitness() {
-        if (fitness >= 0) { // fitness was previously calculated
+        if (hasComputedFitness()) { // fitness was previously calculated
             return fitness;
         } else {
             // TODO
@@ -83,5 +87,14 @@ public class Individual {
         // TODO: Discuss and define what does it mean to be fit
         // Or adopt a time-limit / max-iterations approach
         return false;
+    }
+
+    /**
+     * Returns true if Individual has a computed fitness, otherwise false.
+     *
+     * @return
+     */
+    public boolean hasComputedFitness() {
+        return fitness >= 0;
     }
 }
