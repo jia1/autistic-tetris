@@ -40,7 +40,8 @@ public class Individual {
      * This is useful as an initializer.
      */
     public void randomize() {
-        // TODO
+        // TODO: Discuss what the bounds are and whether they should
+        // be adhered to at all times during the genetic algorithm.
     }
 
     /*
@@ -79,7 +80,8 @@ public class Individual {
      * Return true if this set of weights is good enough.
      */
     public boolean isFitEnough() {
-        // TODO
+        // TODO: Discuss and define what does it mean to be fit
+        // Or adopt a time-limit / max-iterations approach
         return false;
     }
 }
