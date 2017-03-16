@@ -68,10 +68,9 @@ public class Population {
     private Individual[] chooseParents() {
         double[] fitnessSums = new double[individuals.length];
         double currSum = 0;
-        int lastIndex = individuals.length - 1;
-        for (int i = 0; i <= lastIndex; i++) {
+        for (int i = 0; i < individuals.length; i++) {
             currSum += individuals[i].getFitness();
-            Arrays.fill(fitnessSums, i, lastIndex, currSum);
+            Arrays.fill(fitnessSums, i, individuals.length, currSum);
         }
         Random randGen = new Random();
         Individual[] parents = new Individual[2];
