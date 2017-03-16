@@ -7,10 +7,9 @@ public class PlayerSkeleton {
 	public static int WEIGHT_INDEX_NUM_ROWS_CLEARED = 1; 
 	public static int WEIGHT_INDEX_MAX_HEIGHT = 2; 
 	public static int WEIGHT_INDEX_AVG_HEIGHT = 3; 
-	public static int WEIGHT_INDEX_SURFACE_AREA = 4; 
-	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS = 5; 
-	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR = 6; 
-	public static int WEIGHT_INDEX_MAX_ADJ_DIFF = 7; 
+	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS = 4; 
+	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR = 5; 
+	public static int WEIGHT_INDEX_MAX_ADJ_DIFF = 6; 
 	
     // Picks a move to carry out based on the current state of the board.
     //
@@ -133,7 +132,6 @@ public class PlayerSkeleton {
     	int numRowsCleared = countCompletedRows(field);  
     	int maxHeight = maxHeight(top, numRowsCleared); 
     	double avgHeight = averageHeight(top, numRowsCleared);
-    	int surfaceArea = surfaceArea(topDiff); 
     	double boardSmoothnessAbs = boardSmoothnessAbsolute(topDiff); 
     	double boardSmoothnessSqr = boardSmoothnessSquared(topDiff); 
     	int maxAdjacentDiff = maxAdjacentDiff(topDiff); 
@@ -143,7 +141,6 @@ public class PlayerSkeleton {
         	 + numRowsCleared * weights[WEIGHT_INDEX_NUM_ROWS_CLEARED] 
              + maxHeight * weights[WEIGHT_INDEX_MAX_HEIGHT]
              + avgHeight * weights[WEIGHT_INDEX_AVG_HEIGHT]
-             + surfaceArea * weights[WEIGHT_INDEX_SURFACE_AREA]
              + boardSmoothnessAbs * weights[WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS]
              + boardSmoothnessSqr * weights[WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR]
              + maxAdjacentDiff * weights[WEIGHT_INDEX_MAX_ADJ_DIFF];
@@ -178,17 +175,6 @@ public class PlayerSkeleton {
     		totalHeight += top[i]; 
     	}
     	return totalHeight/Constants.COLS - numRowsCleared; 
-    }
-    
-    public static int surfaceArea(int[] topDiff) {
-    	// start with 1 because count the top part of the first column 
-    	int surfaceArea = 1; 
-    	for (int i = 0; i < topDiff.length; i++){ 
-    		// add 1 to count the top part of each column 
-    		surfaceArea += (topDiff[i] + 1); 
-    	}
-    	
-    	return surfaceArea; 
     }
     
     public static double boardSmoothnessAbsolute(int[] topDiff) {
