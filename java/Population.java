@@ -68,4 +68,21 @@ public class Population {
         }
         return parents;
     }
+
+    /**
+     * Reproduces a Individual (child) from two Individual (parents).
+     * For each weight of the child, choose either parent to copy from.
+     *
+     * @param parents
+     * @return
+     */
+    private Individual reproduce(Individual[] parents) {
+        Individual child = new Individual();
+        Random randGen = new Random();
+        for (int i = 0; i < child.getWeights().length; i++) {
+            int randIndex = randGen.nextInt(NUM_PARENTS_PER_REPRODUCTION);
+            child.setWeight(i, parents[randIndex].getWeight(i));
+        }
+        return child;
+    }
 }
