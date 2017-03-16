@@ -3,6 +3,7 @@ import java.util.Random;
 
 public class Population {
     Individual[] individuals;
+    double cumulativeFitness = 0;
     double[] normalizedFitness;
 
     public static int NUM_PARENTS_PER_REPRODUCTION = 2;
@@ -41,7 +42,18 @@ public class Population {
      * Normalize them so that they sum to 1.
      */
     public void computeNormalizedFitness() {
-        // TODO
+        // TODO: We can parallelize the simulation for each individual.
+
+        // Normalization
+        if (cumulativeFitness > 0) {
+            for (int i = 0; i < individuals.length; i++) {
+                double currFitness = individuals[i].getFitness();
+                if (!individuals[i].hasComputedFitness()) {
+                    individuals[i].computeFitness();
+                }
+                individuals[i].setFitness(currFitness/cumulativeFitness);
+            }
+        }
     }
 
     /**
@@ -54,20 +66,21 @@ public class Population {
      * @return an array of size 2 of Individual
      */
     private Individual[] chooseParents() {
-        int[] cumulativeFitness = new int[individuals.length];
-        int currSum = 0;
+        double[] fitnessSums = new double[individuals.length];
+        double currSum = 0;
         int lastIndex = individuals.length - 1;
         for (int i = 0; i <= lastIndex; i++) {
             currSum += individuals[i].getFitness();
-            Arrays.fill(cumulativeFitness, i, lastIndex, currSum);
+            Arrays.fill(fitnessSums, i, lastIndex, currSum);
         }
         Random randGen = new Random();
         Individual[] parents = new Individual[2];
         for (int t = 0; t < NUM_PARENTS_PER_REPRODUCTION; t++) {
-            int randNum = randGen.nextInt(currSum + 1);
-            int parentIndex = Arrays.binarySearch(cumulativeFitness, randNum);
+            int randNum = randGen.nextInt((int)Math.ceil(currSum) + 1);
+            int parentIndex = Arrays.binarySearch(fitnessSums, randNum);
             parents[t] = individuals[parentIndex];
         }
+        cumulativeFitness = currSum;
         return parents;
     }
 
