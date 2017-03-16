@@ -19,8 +19,16 @@ public class Individual {
         return fitness;
     }
 
+    public double getWeight(int index) {
+        return weights[index];
+    }
+
     public double[] getWeights() {
         return weights;
+    }
+
+    public void setWeight(int index, double weight) {
+        this.weights[index] = weight;
     }
 
     public void setWeights(double[] weights) {
