@@ -1,6 +1,11 @@
+import java.util.Arrays;
+import java.util.Random;
+
 public class Population {
     Individual[] individuals;
     double[] normalizedFitness;
+
+    public static int NUM_PARENTS_PER_REPRODUCTION = 2;
 
     Population(int pop_size) {
         this.individuals = new Individual[pop_size];
@@ -24,7 +29,7 @@ public class Population {
      * randomly over the population fitness distribution.
      * Breed the parents, produce a child and mutate the child.
      */
-    public Individual generateChild(){
+    public Individual generateChild() {
         // TODO
         return null;
     }
@@ -35,5 +40,32 @@ public class Population {
      */
     public void computeNormalizedFitness() {
         // TODO
+    }
+
+    /**
+     * Chooses two Individual (aka parents) with "replacement" from an array of Individual.
+     *
+     * 1. Transform the array into an array of cumulative sums.
+     * 2. Pick a random number in the range from zero up to the cumulative total.
+     * 3. Use binary search on the cumulative array to locate the index into the original array.
+     *
+     * @return an array of size 2 of Individual
+     */
+    private Individual[] chooseParents() {
+        int[] cumulativeFitness = new int[individuals.length];
+        int currSum = 0;
+        int lastIndex = individuals.length - 1;
+        for (int i = 0; i <= lastIndex; i++) {
+            currSum += individuals[i].getFitness();
+            Arrays.fill(cumulativeFitness, i, lastIndex, currSum);
+        }
+        Random randGen = new Random();
+        Individual[] parents = new Individual[2];
+        for (int t = 0; t < NUM_PARENTS_PER_REPRODUCTION; t++) {
+            int randNum = randGen.nextInt(currSum + 1);
+            int parentIndex = Arrays.binarySearch(cumulativeFitness, randNum);
+            parents[t] = individuals[parentIndex];
+        }
+        return parents;
     }
 }
