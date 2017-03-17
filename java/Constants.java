@@ -7,6 +7,8 @@ public class Constants {
     public static final int FEATURE_COUNT = 8;
     public static final int NUM_TRAIN_GAMES = 1000;
     public static final int NUM_TRAIN_ITERS = 1000;
+    public static final int POP_SIZE = 1000;
+    public static final int POP_ITER = 1000;
 
     public static final int SEARCH_TRIALS = 100;
     public static final int SEARCH_DEPTH = 5;
