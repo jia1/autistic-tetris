@@ -7,6 +7,7 @@ public class Population {
     double[] normalizedFitness;
 
     public static int NUM_PARENTS_PER_REPRODUCTION = 2;
+    public static Random RAND_GENERATOR = new Random();
 
     Population(int pop_size) {
         this.individuals = new Individual[pop_size];
@@ -51,7 +52,7 @@ public class Population {
                 if (!individuals[i].hasComputedFitness()) {
                     individuals[i].computeFitness();
                 }
-                individuals[i].setFitness(currFitness/cumulativeFitness);
+                individuals[i].setFitness(currFitness / cumulativeFitness);
             }
         }
     }
@@ -72,10 +73,9 @@ public class Population {
             currSum += individuals[i].getFitness();
             Arrays.fill(fitnessSums, i, individuals.length, currSum);
         }
-        Random randGen = new Random();
         Individual[] parents = new Individual[2];
         for (int t = 0; t < NUM_PARENTS_PER_REPRODUCTION; t++) {
-            int randNum = randGen.nextInt((int)Math.ceil(currSum) + 1);
+            int randNum = RAND_GENERATOR.nextInt((int)Math.ceil(currSum) + 1);
             int parentIndex = Arrays.binarySearch(fitnessSums, randNum);
             parents[t] = individuals[parentIndex];
         }
@@ -92,9 +92,8 @@ public class Population {
      */
     private Individual reproduce(Individual[] parents) {
         Individual child = new Individual();
-        Random randGen = new Random();
         for (int i = 0; i < child.getWeights().length; i++) {
-            int randIndex = randGen.nextInt(NUM_PARENTS_PER_REPRODUCTION);
+            int randIndex = RAND_GENERATOR.nextInt(NUM_PARENTS_PER_REPRODUCTION);
             child.setWeight(i, parents[randIndex].getWeight(i));
         }
         return child;
