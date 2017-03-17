@@ -23,7 +23,7 @@ public class State {
 	private int cleared = 0;
 	
 	//each square in the grid - int means empty - other values mean the turn it was placed
-	private int[][] field = new int[ROWS][COLS];
+	public int[][] field = new int[ROWS][COLS];
 	//top row+1 of each column
 	//0 means empty
 	private int[] top = new int[COLS];
@@ -310,10 +310,15 @@ public class State {
 		label.line(0, 0, 0, ROWS+5);
 		label.line(COLS, 0, COLS, ROWS+5);
 	}
-	
 
-	
-
+        // copy ctor
+        public State(State s) {
+            this.turn = s.turn;
+            this.cleared = s.cleared;
+            this.field = s.field;
+            this.top = s.top;
+            this.nextPiece = s.nextPiece;
+        }
 }
 
 
