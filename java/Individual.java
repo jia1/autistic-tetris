@@ -4,7 +4,7 @@ import java.util.Random;
  * Represents a single set of weights for the atomic heuristics.
  * Acts as a single individual in the genetic algorithm.
  */
-public class Individual {
+public class Individual implements Comparable {
     private double fitness = -1;
     private double[] weights = new double[Constants.FEATURE_COUNT];
 
@@ -122,5 +122,18 @@ public class Individual {
      */
     public boolean hasComputedFitness() {
         return fitness >= 0; // i.e. cleared 0 or more rows
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Individual other = (Individual) o;
+        // Reverse compare/sort
+        if (this.getFitness() < other.getFitness()) {
+            return 1;
+        } else if (this.getFitness() > other.getFitness()) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }
