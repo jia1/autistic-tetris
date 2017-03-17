@@ -44,8 +44,9 @@ public class Individual {
      * This is useful as an initializer.
      */
     public void randomize() {
-        // TODO: Discuss what the bounds are and whether they should
-        // be adhered to at all times during the genetic algorithm.
+        for (int i = 0; i < weights.length; i++) {
+            this.setWeight(i, Math.random());
+        }
     }
 
     /*
