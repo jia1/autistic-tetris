@@ -59,9 +59,50 @@ public class Individual {
         if (hasComputedFitness()) { // fitness was previously calculated
             return fitness;
         } else {
-            // TODO
-            return 0;
+            double gameFitnessSum = 0;
+            // play tetris 1000 times
+            for (int gameNum = 0; gameNum < 1000; gameNum++) {
+                double gameFitness = this.playGame();
+            }
+            double gameFitnessAverage = gameFitnessSum / 1000;
+            return gameFitnessAverage;
         }
+    }
+
+    /*
+     * Plays a game (of at most some fixed number of iterations)
+     * using the current individual's weights to form the heuristic
+     * that is used in the move decision.
+     * Returns the score (number of rows cleared) at the end of the game.
+     */
+    public double playGame() {
+        State s = new State();
+
+        // run the game for at most 1000 iterations
+        for (int numIterations = 0; numIterations < 1000; numIterations++) {
+            // if game over, just end and balik kampong
+            if (s.hasLost()) break;
+
+            // make next move decision
+            int[][] legalMoves = s.legalMoves();
+            int bestMove = -1;
+            double bestHeuristic = Double.NEGATIVE_INFINITY;
+            // try all the legal moves on clones of the current board
+            for (int i = 0; i < legalMoves.length; i++) {
+                State sClone = new State(s);
+                sClone.makeMove(i);
+                double heuristicVal = PlayerSkeleton.heuristic(sClone.field, this.weights);
+                if (heuristicVal > bestHeuristic) {
+                    bestMove = i;
+                    bestHeuristic = heuristicVal;
+                }
+            }
+
+            // make the actual move
+            s.makeMove(bestMove);
+        }
+
+        return s.getRowsCleared();
     }
 
     /*
