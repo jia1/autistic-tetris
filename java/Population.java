@@ -47,8 +47,11 @@ public class Population {
      * Should be parallelized.
      */
     public Population breedNewGeneration() {
-        // TODO
-        return null;
+        Population nextPop = new Population(individuals.length);
+        for (int p = 0; p < individuals.length; p++) {
+            nextPop.individuals[p] = makeChild();
+        }
+        return nextPop;
     }
 
     /**
