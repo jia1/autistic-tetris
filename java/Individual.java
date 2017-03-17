@@ -6,13 +6,14 @@ import java.util.Random;
  */
 public class Individual {
     private double fitness = -1;
-    private double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
+    private double[] weights = new double[Constants.FEATURE_COUNT];
 
     public static int PROB_PERCENT_MUTATE = 5;
     public static double WEIGHT_BOUND_UPP = 1.0;
     public static double WEIGHT_BOUND_LOW = -1.0;
 
     public static int RAND_BOUND_MUTATE = 2*100/PROB_PERCENT_MUTATE;
+    public static Random RAND_GENERATOR = new Random();
 
 
     public double getFitness() {
@@ -45,7 +46,7 @@ public class Individual {
      */
     public void randomize() {
         for (int i = 0; i < weights.length; i++) {
-            this.setWeight(i, Math.random());
+            this.setWeight(i, RAND_GENERATOR.nextDouble());
         }
     }
 
@@ -61,10 +62,10 @@ public class Individual {
         } else {
             double gameFitnessSum = 0;
             // play tetris 1000 times
-            for (int gameNum = 0; gameNum < 1000; gameNum++) {
-                double gameFitness = this.playGame();
+            for (int gameNum = 0; gameNum < Constants.NUM_TRAIN_GAMES; gameNum++) {
+                gameFitnessSum += this.playGame();
             }
-            double gameFitnessAverage = gameFitnessSum / 1000;
+            double gameFitnessAverage = gameFitnessSum / Constants.NUM_TRAIN_GAMES;
             return gameFitnessAverage;
         }
     }
@@ -79,7 +80,7 @@ public class Individual {
         State s = new State();
 
         // run the game for at most 1000 iterations
-        for (int numIterations = 0; numIterations < 1000; numIterations++) {
+        for (int numIterations = 0; numIterations < Constants.NUM_TRAIN_ITERS; numIterations++) {
             // if game over, just end and balik kampong
             if (s.hasLost()) break;
 
@@ -111,24 +112,14 @@ public class Individual {
      * genetic algorithm.
      */
     public void mutate() {
-        Random randGen = new Random();
         for (int i = 0; i < weights.length; i++) {
-            int randNum = randGen.nextInt(RAND_BOUND_MUTATE);
+            int randNum = RAND_GENERATOR.nextInt(RAND_BOUND_MUTATE);
             if (randNum == 0) {
-                weights[i] += Math.min(WEIGHT_BOUND_UPP, randGen.nextDouble());
+                weights[i] += Math.min(WEIGHT_BOUND_UPP, RAND_GENERATOR.nextDouble());
             } else if (randNum == 1) {
-                weights[i] -= Math.max(WEIGHT_BOUND_LOW, randGen.nextDouble());
+                weights[i] -= Math.max(WEIGHT_BOUND_LOW, RAND_GENERATOR.nextDouble());
             }
         }
-    }
-
-    /*
-     * Return true if this set of weights is good enough.
-     */
-    public boolean isFitEnough() {
-        // TODO: Discuss and define what does it mean to be fit
-        // Or adopt a time-limit / max-iterations approach
-        return false;
     }
 
     /**

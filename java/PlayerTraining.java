@@ -21,11 +21,11 @@ public class PlayerTraining {
     }
 
     public static double[] loadWeights() {
-        double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
+        double[] weights = new double[Constants.FEATURE_COUNT];
         Path path = Paths.get(WEIGHTS_PATH);
         try {
             Scanner scanner = new Scanner(path, StandardCharsets.UTF_8.name());
-            for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
+            for (int i = 0; i < Constants.FEATURE_COUNT; i++) {
                 weights[i] = scanner.nextDouble();
             }
             scanner.close();
@@ -39,7 +39,7 @@ public class PlayerTraining {
     public static void saveWeights(double[] weights) throws IOException {
         Path path = Paths.get(WEIGHTS_PATH);
         BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-        for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
+        for (int i = 0; i < Constants.FEATURE_COUNT; i++) {
             writer.write(Double.toString(weights[i]));
             writer.write("\n");
         }
