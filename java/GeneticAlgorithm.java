@@ -7,13 +7,20 @@ public class GeneticAlgorithm {
     public static Individual[] fittestIndividuals = new Individual[10];
 
     public static double[] obtainBestWeights() {
+        // Process the 1st generation
+        population.computeNormalizedFitness();
+        List popList = Arrays.asList(population.individuals);
+        Collections.sort(popList);
+        Individual[] currFittest = (Individual[]) popList.toArray();
+        fittestIndividuals = merge(fittestIndividuals, currFittest);
         for (int t = 0; t < Constants.POP_ITER; t++) {
-            population.computeNormalizedFitness();
-            List popList = Arrays.asList(population.individuals);
-            Collections.sort(popList);
-            Individual[] currFittest = (Individual[]) popList.toArray();
-            fittestIndividuals = merge(fittestIndividuals, currFittest);
+            // Breed then process
             population = population.breedNewGeneration();
+            population.computeNormalizedFitness();
+            popList = Arrays.asList(population.individuals);
+            Collections.sort(popList);
+            currFittest = (Individual[]) popList.toArray();
+            fittestIndividuals = merge(fittestIndividuals, currFittest);
         }
         return fittestIndividuals[0].getWeights(); // temporary solution
     }
