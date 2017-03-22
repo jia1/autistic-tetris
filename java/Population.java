@@ -78,7 +78,7 @@ public class Population {
      * @return an array of size 2 of Individual
      */
     private Individual[] chooseParents() {
-        Individual[] parents = new Individual[2];
+        Individual[] parents = new Individual[NUM_PARENTS_PER_REPRODUCTION];
         for (int t = 0; t < NUM_PARENTS_PER_REPRODUCTION; t++) {
             int randNum = RAND_GENERATOR.nextInt((int)Math.ceil(totalFitness) + 1);
             int parentIndex = Arrays.binarySearch(summedFitness, randNum);
