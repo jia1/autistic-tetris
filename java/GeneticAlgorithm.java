@@ -8,6 +8,10 @@ public class GeneticAlgorithm {
 
     public static double[] obtainBestWeights() {
         // Process the 1st generation
+        for(int i = 0; i < fittestIndividuals.length; i++){
+            fittestIndividuals[i] = new Individual();
+        }
+        
         population.computeNormalizedFitness();
         List popList = Arrays.asList(population.individuals);
         Collections.sort(popList);
@@ -15,6 +19,8 @@ public class GeneticAlgorithm {
         fittestIndividuals = merge(fittestIndividuals, currFittest);
         for (int t = 0; t < Constants.POP_ITER; t++) {
             // Breed then process
+            System.out.println("At the " + t + " iteration.");
+            
             population = population.breedNewGeneration();
             population.computeNormalizedFitness();
             popList = Arrays.asList(population.individuals);
