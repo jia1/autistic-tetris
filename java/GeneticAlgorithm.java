@@ -5,7 +5,7 @@ import java.util.List;
 public class GeneticAlgorithm {
     
     public static final int NUM_TRAIN_GAMES = 1000;
-    public static final int NUM_TRAIN_ITERS = 10;
+    public static final int NUM_TRAIN_ITERS = 1000;
     public static final int POP_SIZE = 1000;
     public static final int POP_ITER = 1000;
     
