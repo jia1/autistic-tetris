@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class PlayerTraining {
@@ -13,6 +14,7 @@ public class PlayerTraining {
     public static void main(String[] args) {
         double[] bestWeights = GeneticAlgorithm.obtainBestWeights();
         try {
+            System.out.println(Arrays.toString(bestWeights));
             saveWeights(bestWeights);
         } catch (IOException e) {
             // TODO Auto-generated catch block

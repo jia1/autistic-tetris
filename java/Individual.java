@@ -14,6 +14,9 @@ public class Individual implements Comparable<Individual> {
 
 
     public double getFitness() {
+        if (!hasComputedFitness()) {
+            computeFitness();
+        }
         return fitness;
     }
 
@@ -61,6 +64,7 @@ public class Individual implements Comparable<Individual> {
                 gameFitnessSum += this.playGame();
             }
             fitness = gameFitnessSum / GeneticAlgorithm.NUM_TRAIN_GAMES;
+            System.out.println("fitness " + fitness);
         }
     }
 
@@ -72,12 +76,11 @@ public class Individual implements Comparable<Individual> {
      */
     private double playGame() {
         State s = new State();
-
+        TFrame t = new TFrame(s);
         // run the game for at most NUM_TRAIN_ITERS iterations
         for (int numIterations = 0; numIterations < GeneticAlgorithm.NUM_TRAIN_ITERS; numIterations++) {
             // if game over, just end and balik kampong
             if (s.hasLost()) break;
-
             // make next move decision
             int[][] legalMoves = s.legalMoves();
             int bestMove = -1;
@@ -95,8 +98,17 @@ public class Individual implements Comparable<Individual> {
 
             // make the actual move
             s.makeMove(bestMove);
+            s.draw();           // [DISPLAY]
+            s.drawNext(0, 0);   // [DISPLAY]
+            
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-
+        t.dispose();
         return s.getRowsCleared();
     }
 
