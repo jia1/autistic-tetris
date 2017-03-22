@@ -6,7 +6,7 @@ import java.util.Random;
  */
 public class Individual implements Comparable<Individual> {
     private double fitness = -1;
-    private double[] weights = new double[Constants.FEATURE_COUNT];
+    private double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
 
     public static int PROB_PERCENT_MUTATE = 5;
     public static int RAND_BOUND_MUTATE = 2*100 / PROB_PERCENT_MUTATE;
@@ -57,10 +57,10 @@ public class Individual implements Comparable<Individual> {
         if (!hasComputedFitness()) {
             double gameFitnessSum = 0;
             // Play the Tetris game NUM_TRAIN_GAMES times
-            for (int gameNum = 0; gameNum < Constants.NUM_TRAIN_GAMES; gameNum++) {
+            for (int gameNum = 0; gameNum < GeneticAlgorithm.NUM_TRAIN_GAMES; gameNum++) {
                 gameFitnessSum += this.playGame();
             }
-            fitness = gameFitnessSum / Constants.NUM_TRAIN_GAMES;
+            fitness = gameFitnessSum / GeneticAlgorithm.NUM_TRAIN_GAMES;
         }
     }
 
@@ -74,7 +74,7 @@ public class Individual implements Comparable<Individual> {
         State s = new State();
 
         // run the game for at most NUM_TRAIN_ITERS iterations
-        for (int numIterations = 0; numIterations < Constants.NUM_TRAIN_ITERS; numIterations++) {
+        for (int numIterations = 0; numIterations < GeneticAlgorithm.NUM_TRAIN_ITERS; numIterations++) {
             // if game over, just end and balik kampong
             if (s.hasLost()) break;
 
