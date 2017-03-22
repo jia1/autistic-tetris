@@ -88,6 +88,9 @@ public class Population {
         for (int t = 0; t < NUM_PARENTS_PER_REPRODUCTION; t++) {
             int randNum = RAND_GENERATOR.nextInt((int)Math.ceil(totalFitness) + 1);
             int parentIndex = Arrays.binarySearch(summedFitness, randNum);
+            if (parentIndex < 0) {
+                parentIndex = -(parentIndex + 1);
+            }
             parents[t] = individuals[parentIndex];
         }
         return parents;
