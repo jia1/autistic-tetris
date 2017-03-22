@@ -19,7 +19,7 @@ public class GeneticAlgorithm {
         }
         
         population.computeNormalizedFitness();
-        List popList = Arrays.asList(population.individuals);
+        List<Individual> popList = Arrays.asList(population.individuals);
         Collections.sort(popList);
         Individual[] currFittest = (Individual[]) popList.toArray();
         fittestIndividuals = merge(fittestIndividuals, currFittest);
