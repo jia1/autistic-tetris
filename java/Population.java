@@ -88,9 +88,13 @@ public class Population {
         for (int t = 0; t < NUM_PARENTS_PER_REPRODUCTION; t++) {
             int randNum = RAND_GENERATOR.nextInt((int)Math.ceil(totalFitness) + 1);
             int parentIndex = Arrays.binarySearch(summedFitness, randNum);
+            System.out.println(Arrays.toString(summedFitness));
+            //System.out.println("parent index bef negation:"  + parentIndex);
             if (parentIndex < 0) {
                 parentIndex = -(parentIndex + 1);
             }
+            parentIndex = Math.min(parentIndex, individuals.length - 1);
+            System.out.println("parent index aft negation:"  + parentIndex);
             parents[t] = individuals[parentIndex];
         }
         return parents;
