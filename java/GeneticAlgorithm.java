@@ -3,7 +3,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class GeneticAlgorithm {
-    public static Population population = new Population(Constants.POP_SIZE);
+    
+    public static final int NUM_TRAIN_GAMES = 1000;
+    public static final int NUM_TRAIN_ITERS = 10;
+    public static final int POP_SIZE = 1000;
+    public static final int POP_ITER = 1000;
+    
+    public static Population population = new Population(POP_SIZE);
     public static Individual[] fittestIndividuals = new Individual[10];
 
     public static double[] obtainBestWeights() {
@@ -17,7 +23,7 @@ public class GeneticAlgorithm {
         Collections.sort(popList);
         Individual[] currFittest = (Individual[]) popList.toArray();
         fittestIndividuals = merge(fittestIndividuals, currFittest);
-        for (int t = 0; t < Constants.POP_ITER; t++) {
+        for (int t = 0; t < POP_ITER; t++) {
             // Breed then process
             System.out.println("At the " + t + " iteration.");
             
