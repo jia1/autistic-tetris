@@ -12,6 +12,9 @@ public class Individual implements Comparable<Individual> {
     public static int RAND_BOUND_MUTATE = 2*100 / PROB_PERCENT_MUTATE;
     public static Random RAND_GENERATOR = new Random();
 
+    public Individual() {
+        this.randomize();
+    }
 
     public double getFitness() {
         return fitness;
@@ -38,12 +41,12 @@ public class Individual implements Comparable<Individual> {
     }
 
     /**
-     * Fill the weight array with random values in the range of [0, 1).
+     * Fill the weight array with random values in the range of [-1, 1].
      * This is useful as an initializer.
      */
     public void randomize() {
         for (int i = 0; i < weights.length; i++) {
-            this.setWeight(i, RAND_GENERATOR.nextDouble());
+            this.setWeight(i, RAND_GENERATOR.nextDouble() * 2 - 1);
         }
     }
 
