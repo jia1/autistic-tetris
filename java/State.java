@@ -315,8 +315,8 @@ public class State {
         public State(State s) {
             this.turn = s.turn;
             this.cleared = s.cleared;
-            this.field = s.field;
-            this.top = s.top;
+            this.field = s.field.clone();
+            this.top = s.top.clone();
             this.nextPiece = s.nextPiece;
         }
 }
