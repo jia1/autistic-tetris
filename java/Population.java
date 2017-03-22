@@ -12,7 +12,13 @@ public class Population {
 
     Population(int pop_size) {
         this.individuals = new Individual[pop_size];
+        //initialize individuals array
+        for(int i = 0; i < pop_size; i++){
+            this.individuals[i] = new Individual();
+        }
         this.normalizedFitness = new double[pop_size];
+        //initialize summed fitness array
+        this.summedFitness = new double[pop_size];
     }
 
     /**
