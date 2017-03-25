@@ -15,6 +15,9 @@ public class Individual implements Comparable<Individual> {
     public Individual() {
         this.randomize();
     }
+    public Individual(Individual o) {
+        this.setWeights(o.getWeights());
+    }
 
     public double getFitness() {
         if (!hasComputedFitness()) {
@@ -31,16 +34,22 @@ public class Individual implements Comparable<Individual> {
         return weights[index];
     }
 
+    /*
+     * Return deep copy of the underlying weight array.
+     */
     public double[] getWeights() {
-        return weights;
+        return weights.clone();
     }
 
     public void setWeight(int index, double weight) {
         this.weights[index] = weight;
     }
 
+    /*
+     * Set underlying weight array to a deep copy of the argument array.
+     */
     public void setWeights(double[] weights) {
-        this.weights = weights;
+        this.weights = weights.clone();
     }
 
     /**
@@ -67,7 +76,6 @@ public class Individual implements Comparable<Individual> {
                 gameFitnessSum += this.playGame();
             }
             fitness = gameFitnessSum / GeneticAlgorithm.NUM_TRAIN_GAMES;
-            System.out.println("fitness " + fitness);
         }
     }
 
