@@ -6,7 +6,7 @@ import java.util.Random;
  */
 public class Individual implements Comparable<Individual> {
     private double fitness = -1;
-    private double[] weights = new double[Constants.FEATURE_COUNT];
+    private double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
 
     public static int PROB_PERCENT_MUTATE = 5;
     public static int RAND_BOUND_MUTATE = 2*100 / PROB_PERCENT_MUTATE;
@@ -17,6 +17,9 @@ public class Individual implements Comparable<Individual> {
     }
 
     public double getFitness() {
+        if (!hasComputedFitness()) {
+            computeFitness();
+        }
         return fitness;
     }
 
@@ -60,10 +63,11 @@ public class Individual implements Comparable<Individual> {
         if (!hasComputedFitness()) {
             double gameFitnessSum = 0;
             // Play the Tetris game NUM_TRAIN_GAMES times
-            for (int gameNum = 0; gameNum < Constants.NUM_TRAIN_GAMES; gameNum++) {
+            for (int gameNum = 0; gameNum < GeneticAlgorithm.NUM_TRAIN_GAMES; gameNum++) {
                 gameFitnessSum += this.playGame();
             }
-            fitness = gameFitnessSum / Constants.NUM_TRAIN_GAMES;
+            fitness = gameFitnessSum / GeneticAlgorithm.NUM_TRAIN_GAMES;
+            System.out.println("fitness " + fitness);
         }
     }
 
@@ -75,12 +79,11 @@ public class Individual implements Comparable<Individual> {
      */
     private double playGame() {
         State s = new State();
-
+        TFrame t = new TFrame(s);
         // run the game for at most NUM_TRAIN_ITERS iterations
-        for (int numIterations = 0; numIterations < Constants.NUM_TRAIN_ITERS; numIterations++) {
+        for (int numIterations = 0; numIterations < GeneticAlgorithm.NUM_TRAIN_ITERS; numIterations++) {
             // if game over, just end and balik kampong
             if (s.hasLost()) break;
-
             // make next move decision
             int[][] legalMoves = s.legalMoves();
             int bestMove = -1;
@@ -98,8 +101,17 @@ public class Individual implements Comparable<Individual> {
 
             // make the actual move
             s.makeMove(bestMove);
+            s.draw();           // [DISPLAY]
+            s.drawNext(0, 0);   // [DISPLAY]
+            
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-
+        t.dispose();
         return s.getRowsCleared();
     }
 
