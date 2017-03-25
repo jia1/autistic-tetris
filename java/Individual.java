@@ -77,41 +77,49 @@ public class Individual implements Comparable<Individual> {
      * that is used in the move decision.
      * Returns the score (number of rows cleared) at the end of the game.
      */
-    private double playGame() {
+    public double playGame() {
         State s = new State();
-        TFrame t = new TFrame(s);
+        //TFrame t = new TFrame(s);
         // run the game for at most NUM_TRAIN_ITERS iterations
         for (int numIterations = 0; numIterations < GeneticAlgorithm.NUM_TRAIN_ITERS; numIterations++) {
             // if game over, just end and balik kampong
             if (s.hasLost()) break;
             // make next move decision
             int[][] legalMoves = s.legalMoves();
-            int bestMove = -1;
-            double bestHeuristic = Double.NEGATIVE_INFINITY;
+            // this will contain the int[] representing the best move under this individual's  heuristic weights
+            int[] bestMove = null;
+            // this is the worst possible heuristic value given a heuristic function
+            double bestHeuristicVal = Double.NEGATIVE_INFINITY;
             // try all the legal moves on clones of the current board
-            for (int i = 0; i < legalMoves.length; i++) {
-                State sClone = new State(s);
-                sClone.makeMove(i);
-                double heuristicVal = PlayerSkeleton.heuristic(sClone.field, this.weights);
-                if (heuristicVal > bestHeuristic) {
-                    bestMove = i;
-                    bestHeuristic = heuristicVal;
+            for (int[] legalMove : legalMoves) {
+                // clone the board
+                int[][] fieldCopy = PlayerSkeleton.copyField(s.getField());
+                // apply move on the board clone, using whatever the next piece was supposed to be on the original board
+                fieldCopy = PlayerSkeleton.applyMove(fieldCopy, s.getNextPiece(), legalMove);
+                // get the heuristic value of the cloned board after the move
+                double heuristicVal = PlayerSkeleton.heuristic(fieldCopy, this.weights);
+                // update the best heuristic value and the move that caused it
+                if (heuristicVal > bestHeuristicVal) {
+                    bestMove = legalMove;
+                    bestHeuristicVal = heuristicVal;
                 }
             }
+            // at this point, bestMove is the actual best move
 
             // make the actual move
             s.makeMove(bestMove);
-            s.draw();           // [DISPLAY]
-            s.drawNext(0, 0);   // [DISPLAY]
-            
+            //s.draw();           // [DISPLAY]
+            //s.drawNext(0, 0);   // [DISPLAY]
+            /*
             try {
-                Thread.sleep(10000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            */
         }
-        t.dispose();
+        //t.dispose();
         return s.getRowsCleared();
     }
 
@@ -149,5 +157,11 @@ public class Individual implements Comparable<Individual> {
         } else {
             return 0;
         }
+    }
+    
+    public static void main(String[] args) {
+        Individual individual = new Individual();
+        double score = individual.playGame();
+        System.out.println(score);
     }
 }
