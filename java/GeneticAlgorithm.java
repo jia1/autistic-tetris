@@ -4,15 +4,16 @@ import java.util.List;
 
 public class GeneticAlgorithm {
     
-    public static final int NUM_TRAIN_GAMES = 1000;
-    public static final int NUM_TRAIN_ITERS = 1000;
-    public static final int POP_SIZE = 1000;
-    public static final int POP_ITER = 1000;
+    public static final int NUM_TRAIN_GAMES = 1;
+    public static final int POP_SIZE = 10;
+    public static final int POP_ITER = 10;
     
     public static Population population = new Population(POP_SIZE);
-    public static Individual[] fittestIndividuals = new Individual[10];
+    public static Individual[] fittestIndividuals = new Individual[10]; // TODO: maybe no need so many
+    public static Individual overallFittestIndividual = null;
 
-    public static double[] obtainBestWeights() {
+    
+    public static double[] train() {
         // Process the 1st generation
         for(int i = 0; i < fittestIndividuals.length; i++){
             fittestIndividuals[i] = new Individual();
@@ -36,6 +37,21 @@ public class GeneticAlgorithm {
         }
         return fittestIndividuals[0].getWeights(); // temporary solution
     }
+    
+    public static void trainingTest() {
+        for (int i = 0;; i++) {
+            Population newGeneration = population.breedNewGeneration();
+            Individual fittestIndividual = population.getFittestIndividual();
+            if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
+                overallFittestIndividual = fittestIndividual;
+            }
+            System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%n%n",
+                              i,
+                              overallFittestIndividual.toString(),
+                              overallFittestIndividual.getFitness());
+            population = newGeneration; // garbage collect the old one
+        }
+    }
 
     private static Individual[] merge(Individual[] prevFittest, Individual[] currFittest) {
         Individual[] mergedFittest = new Individual[prevFittest.length];
@@ -48,5 +64,9 @@ public class GeneticAlgorithm {
             }
         }
         return mergedFittest;
+    }
+    
+    public static void main(String[] args) {
+        GeneticAlgorithm.trainingTest();
     }
 }

@@ -53,6 +53,7 @@ public class Population {
      * Should be parallelized.
      */
     public Population breedNewGeneration() {
+        this.computeNormalizedFitness();
         Population nextPop = new Population(individuals.length);
         for (int p = 0; p < individuals.length; p++) {
             nextPop.individuals[p] = makeChild();
@@ -88,13 +89,10 @@ public class Population {
         for (int t = 0; t < NUM_PARENTS_PER_REPRODUCTION; t++) {
             int randNum = RAND_GENERATOR.nextInt((int)Math.ceil(totalFitness) + 1);
             int parentIndex = Arrays.binarySearch(summedFitness, randNum);
-            System.out.println(Arrays.toString(summedFitness));
-            //System.out.println("parent index bef negation:"  + parentIndex);
             if (parentIndex < 0) {
                 parentIndex = -(parentIndex + 1);
             }
             parentIndex = Math.min(parentIndex, individuals.length - 1);
-            System.out.println("parent index aft negation:"  + parentIndex);
             parents[t] = individuals[parentIndex];
         }
         return parents;
@@ -138,5 +136,20 @@ public class Population {
      */
     private boolean hasAccumulatedFitness() {
         return totalFitness >= 0;
+    }
+    
+    /*
+     * Get a REFERENCE to the fittest individual in the population.
+     */
+    public Individual getFittestIndividual() {
+        Individual bestIndividual = null;
+        double bestFitnessScore = -1;
+        for (Individual i : this.individuals) {
+            if (i.getFitness() > bestFitnessScore) {
+                bestIndividual = i;
+                bestFitnessScore = i.getFitness();
+            }
+        }
+        return bestIndividual;
     }
 }
