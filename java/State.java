@@ -318,7 +318,10 @@ public class State {
         this.field = new int[s.field.length][];
         for (int i = 0; i < s.field.length; i++) {
             this.field[i] = new int[s.field[i].length];
-            System.arraycopy(s.field[i], 0, this.field[i], 0, s.field[i].length);
+            for (int j = 0; j < s.field[i].length; j++) {
+                this.field[i][j] = s.field[i][j];
+            }
+            //System.arraycopy(s.field[i], 0, this.field[i], 0, s.field[i].length);
         }
         this.top = s.top;
         this.nextPiece = s.nextPiece;

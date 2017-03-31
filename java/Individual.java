@@ -89,7 +89,7 @@ public class Individual implements Comparable<Individual> {
         State s = new State();
         //TFrame t = new TFrame(s);
         // run the game for at most NUM_TRAIN_ITERS iterations
-        for (int numIterations = 0; numIterations < GeneticAlgorithm.NUM_TRAIN_ITERS; numIterations++) {
+        while (true) { // TODO: CLEAN UP THIS FUCK SHIT
             // if game over, just end and balik kampong
             if (s.hasLost()) break;
             // make next move decision
@@ -165,6 +165,16 @@ public class Individual implements Comparable<Individual> {
         } else {
             return 0;
         }
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < weights.length; i++) {
+            builder.append(weights[i]);
+            builder.append(' ');
+        }
+        return builder.toString();
     }
     
     public static void main(String[] args) {
