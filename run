@@ -1,0 +1,6 @@
+#!/bin/bash
+
+./compile
+cp java/*.txt build
+cd build
+java GeneticAlgorithm
