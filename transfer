@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Move the entire project into $USER's Tembusu cluster home.
+# Works best if passwordless ssh is set up (local -> sunfire, sunfire -> tembusu).
+
+# Sadly this is needed because the Tembusu cluster doesn't seem to have access to
+# the open internet, and also doesn't have git installed.
+
+USER="thenaesh"
+TEMBUSU_ACCESS_NODE="xcna0"
+
+TEMBUSU_CMD="if [ ! -d Tetris ]; then mkdir Tetris; else rm -rf Tetris/*; fi && cd Tetris && cat | tar -xzf -"
+SUNFIRE_CMD="cat | ssh ${USER}@${TEMBUSU_ACCESS_NODE} \"${TEMBUSU_CMD}\""
+tar -czf - * | ssh ${USER}@sunfire.comp.nus.edu.sg ${SUNFIRE_CMD}
+
+exit 0
