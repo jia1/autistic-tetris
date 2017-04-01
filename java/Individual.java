@@ -136,14 +136,13 @@ public class Individual implements Comparable<Individual> {
      * This is meant to be used in the mutation step of the genetic algorithm.
      */
     public void mutate() {
-        for (int i = 0; i < weights.length; i++) {
-            int randNum = RAND_GENERATOR.nextInt(RAND_BOUND_MUTATE);
-            if (randNum == 0) {
-                weights[i] += RAND_GENERATOR.nextDouble();
-            } else if (randNum == 1) {
-                weights[i] -= RAND_GENERATOR.nextDouble();
-            }
+        /*
+        for (int indexToMutate = 0; indexToMutate < weights.length; indexToMutate++) {
+            double mutationAmount = RAND_GENERATOR.nextDouble() * 2 - 1;
+            weights[indexToMutate] += mutationAmount;
         }
+        */
+        weights[RAND_GENERATOR.nextInt(weights.length)] += 10 * (2*RAND_GENERATOR.nextDouble() - 1);
     }
 
     /**

@@ -31,12 +31,7 @@ public class Population {
      *      fitness values are stored in normalizedFitness in the Population.
      */
     public void computeNormalizedFitness() {
-        // TODO: Parallelize this loop
-        for (Individual idv : individuals) {
-            idv.computeFitness();
-        }
         accumulateFitness();
-
         // Normalization
         for (int i = 0; i < individuals.length; i++) {
             double currFitness = individuals[i].getFitness();
@@ -53,11 +48,26 @@ public class Population {
      * Should be parallelized.
      */
     public Population breedNewGeneration() {
-        this.computeNormalizedFitness();
+        // TODO: Parallelize this loop
+        for (Individual idv : individuals) {
+            idv.computeFitness();
+        }
+        Arrays.sort(this.individuals);
+
+        // get rid of the weakest, replace with strongest
+        individuals[individuals.length - 1] = individuals[0];
+        this.computeNormalizedFitness(); // prepare for breeding
+
         Population nextPop = new Population(individuals.length);
-        for (int p = 0; p < individuals.length; p++) {
+        // keep the best half of the population
+        for (int p = 0; p < individuals.length/2; p++) {
+            nextPop.individuals[p] = this.individuals[p];
+        }
+        // breed the remainder, leave last slot empty for an immigrant
+        for (int p = individuals.length/2; p < individuals.length - 1; p++) {
             nextPop.individuals[p] = makeChild();
         }
+        nextPop.individuals[individuals.length - 1] = new Individual(); // introduce a mexican immigrant
         return nextPop;
     }
 
@@ -108,8 +118,8 @@ public class Population {
     private Individual reproduce(Individual[] parents) {
         Individual child = new Individual();
         for (int i = 0; i < child.getWeights().length; i++) {
-            int randIndex = RAND_GENERATOR.nextInt(NUM_PARENTS_PER_REPRODUCTION);
-            child.setWeight(i, parents[randIndex].getWeight(i));
+            double alpha = RAND_GENERATOR.nextDouble();
+            child.setWeight(i, alpha * parents[0].getWeight(i) + (1 - alpha) * parents[1].getWeight(i));
         }
         return child;
     }
