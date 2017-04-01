@@ -3,9 +3,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class GeneticAlgorithm {
+    /*
+    Iteration 12652
+    Best Weights: -2.525531182203875 6.271239133059189 -0.06277814190992925 5.503462370977285 -0.9415663203740668 -1.1817283810666752 0.2760817349661713 -11.331052073843246 
+    Best Fitness: 14293.000000
+    Population Best Fitness: 14293.000000
+     */
     
     public static final int NUM_TRAIN_GAMES = 1;
-    public static final int POP_SIZE = 10;
+    public static final int POP_SIZE = 50;
     public static final int POP_ITER = 10;
     
     public static Population population = new Population(POP_SIZE);
@@ -45,10 +51,11 @@ public class GeneticAlgorithm {
             if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
                 overallFittestIndividual = fittestIndividual;
             }
-            System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%n%n",
+            System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nPopulation Best Fitness: %f%n%n",
                               i,
                               overallFittestIndividual.toString(),
-                              overallFittestIndividual.getFitness());
+                              overallFittestIndividual.getFitness(),
+                              fittestIndividual.getFitness());
             population = newGeneration; // garbage collect the old one
         }
     }
