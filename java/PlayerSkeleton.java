@@ -1,5 +1,8 @@
 import java.io.IOException;
 import java.util.Random;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections; 
 
 public class PlayerSkeleton {
 
@@ -9,7 +12,10 @@ public class PlayerSkeleton {
 	public static int WEIGHT_INDEX_AVG_HEIGHT = 3; 
 	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS = 4; 
 	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR = 5; 
-	public static int WEIGHT_INDEX_MAX_ADJ_DIFF = 6; 
+	public static int WEIGHT_INDEX_MAX_ADJ_DIFF = 6;
+	public static int WEIGHT_INDEX_NUM_ROWS_WITH_HOLES = 7; 
+	public static int WEIGHT_INDEX_TOTAL_HOLE_DEPTHS = 8; 
+	public static int WEIGHT_INDEX_MAX_HOLE_DEPTHS = 9; 
 	
     // Picks a move to carry out based on the current state of the board.
     //
@@ -127,6 +133,17 @@ public class PlayerSkeleton {
     		topDiff[c] = Math.abs(top[c] - top[c+1]);  
     	}
     	
+    	// calculate hole depths 
+    	// hole depths refer to number of cells between the top of hole and top of the col
+    	ArrayList<Integer> holeDepths = new ArrayList<>(); 
+    	for (int c = 0; c < Constants.COLS; c++) {
+    		for (int r = 0; r < top[c] - 1; r++) {
+    			if (field[r][c] == 0 && field[r+1][c] == 1) {
+    				holeDepths.add(top[c] - 1 - r); 
+    			}
+    		}
+    	}
+    
     	// calculate each feature 
     	int numHoles = numHoles(field, top); 
     	int numRowsCleared = countCompletedRows(field);  
@@ -135,6 +152,9 @@ public class PlayerSkeleton {
     	double boardSmoothnessAbs = boardSmoothnessAbsolute(topDiff); 
     	double boardSmoothnessSqr = boardSmoothnessSquared(topDiff); 
     	int maxAdjacentDiff = maxAdjacentDiff(topDiff); 
+    	int numRowsWithHoles = numRowsWithHoles(field, topDiff); 
+    	int totalHoleDepths = totalHoleDepths(holeDepths); 
+    	int maxHoleDepth = maxHoleDepth(holeDepths); 
     	
     	// calculate weighted sum of features 
         return numHoles * weights[WEIGHT_INDEX_NUM_HOLES] 
@@ -143,7 +163,10 @@ public class PlayerSkeleton {
              + avgHeight * weights[WEIGHT_INDEX_AVG_HEIGHT]
              + boardSmoothnessAbs * weights[WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS]
              + boardSmoothnessSqr * weights[WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR]
-             + maxAdjacentDiff * weights[WEIGHT_INDEX_MAX_ADJ_DIFF];
+             + maxAdjacentDiff * weights[WEIGHT_INDEX_MAX_ADJ_DIFF]
+             + numRowsWithHoles * weights[WEIGHT_INDEX_NUM_ROWS_WITH_HOLES]
+             + totalHoleDepths * weights[WEIGHT_INDEX_TOTAL_HOLE_DEPTHS]
+             + maxHoleDepth * weights[WEIGHT_INDEX_MAX_HOLE_DEPTHS];
     }
     
     // calculate sum of size of holes 
@@ -202,6 +225,33 @@ public class PlayerSkeleton {
     	}
     	
     	return maxDiff; 
+    }
+    
+    // calculate number of rows with holes 
+    public static int numRowsWithHoles(int field[][], int[] top) {
+    	HashSet<Integer> rowsWithHoles = new HashSet<>(); 
+    	for (int c = 0; c < Constants.COLS; c++) {
+    		for (int r = 0; r < top[c] - 1; r++) {
+    			if (field[r][c] == 0) {
+    				rowsWithHoles.add(r);  
+    			}
+    		}
+    	}
+    	return rowsWithHoles.size(); 
+    }
+    
+    // calculate the sum of hole depths. 
+    // hole depth number of cells between the top of hole and top of the col 
+    public static int totalHoleDepths(ArrayList<Integer> holeDepths) {
+    	int totalHoleDepths = 0; 
+    	for (int holeDepth : holeDepths) {
+    		totalHoleDepths += holeDepth; 
+    	}
+    	return totalHoleDepths; 
+    }
+    
+    public static int maxHoleDepth(ArrayList<Integer> holeDepths) {
+    	return Collections.max(holeDepths); 
     }
     
     // =======================================
@@ -302,7 +352,6 @@ public class PlayerSkeleton {
     // =======================================
     // === Main Functions ===
     // =======================================
-  
     public static void main(String[] args) throws IOException {
         State s = new State();
         new TFrame(s);
