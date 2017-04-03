@@ -382,7 +382,7 @@ public class PlayerSkeleton {
 
  public static class Constants {
 
-     public static final int FEATURE_COUNT = 8;
+     public static final int FEATURE_COUNT = 10;
 
      public static final int SEARCH_TRIALS = 100;
      public static final int SEARCH_DEPTH = 5;
