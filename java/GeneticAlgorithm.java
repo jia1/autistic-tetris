@@ -1,7 +1,3 @@
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public class GeneticAlgorithm {
     /*
     Iteration 12652
@@ -10,15 +6,69 @@ public class GeneticAlgorithm {
     Population Best Fitness: 14293.000000
      */
     
-    public static final int NUM_TRAIN_GAMES = 1;
-    public static final int POP_SIZE = 50;
-    public static final int POP_ITER = 10;
+    public static final int NUM_TRAIN_GAMES = 10;
+    public static final int POP_SIZE = 8;
+    public static final int NUM_BREEDING_ITER = 1000;
     
-    public static Population population = new Population(POP_SIZE);
+    public static Population population = new Population();
     public static Individual[] fittestIndividuals = new Individual[10]; // TODO: maybe no need so many
     public static Individual overallFittestIndividual = null;
 
+
+    public static void train(String toLoadPopFilePathBase, String toSavePopFilePathBase) {
+        if (toLoadPopFilePathBase != null) {
+            population.loadPopulation(toLoadPopFilePathBase);
+        }
+
+        for (int i = 0; i < NUM_BREEDING_ITER; i++) {
+            Population newGeneration = null;
+            boolean isCheckpointTime = i % 25 == 0;
+
+            if (isCheckpointTime) {
+                long startTime = System.nanoTime();
+                newGeneration = population.breedNewGeneration();
+                long endTime = System.nanoTime();
+                System.out.printf("Time Spent: %d ns%n", endTime - startTime);
+
+                population.savePopulation(toSavePopFilePathBase);
+
+                Individual fittestIndividual = population.getFittestIndividual();
+                if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
+                    overallFittestIndividual = fittestIndividual;
+                }
+                System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nPopulation Best Fitness: %f%n%n",
+                        i,
+                        overallFittestIndividual.toString(),
+                        overallFittestIndividual.getFitness(),
+                        fittestIndividual.getFitness());
+            } else {
+                newGeneration = population.breedNewGeneration();
+            }
+
+            population = newGeneration; // garbage collect the old one
+        }
+    }
     
+    public static void testTraining() {
+        population = new Population();
+        for (int i = 0;; i++) {
+            Population newGeneration = population.breedNewGeneration();
+
+            Individual fittestIndividual = population.getFittestIndividual();
+            if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
+                overallFittestIndividual = fittestIndividual;
+            }
+            System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nPopulation Best Fitness: %f%n%n",
+                    i,
+                    overallFittestIndividual.toString(),
+                    overallFittestIndividual.getFitness(),
+                    fittestIndividual.getFitness());
+
+            population = newGeneration; // garbage collect the old one
+        }
+    }
+
+    /*
     public static double[] train() {
         // Process the 1st generation
         for(int i = 0; i < fittestIndividuals.length; i++){
@@ -43,22 +93,6 @@ public class GeneticAlgorithm {
         }
         return fittestIndividuals[0].getWeights(); // temporary solution
     }
-    
-    public static void trainingTest() {
-        for (int i = 0;; i++) {
-            Population newGeneration = population.breedNewGeneration();
-            Individual fittestIndividual = population.getFittestIndividual();
-            if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
-                overallFittestIndividual = fittestIndividual;
-            }
-            System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nPopulation Best Fitness: %f%n%n",
-                              i,
-                              overallFittestIndividual.toString(),
-                              overallFittestIndividual.getFitness(),
-                              fittestIndividual.getFitness());
-            population = newGeneration; // garbage collect the old one
-        }
-    }
 
     private static Individual[] merge(Individual[] prevFittest, Individual[] currFittest) {
         Individual[] mergedFittest = new Individual[prevFittest.length];
@@ -72,8 +106,10 @@ public class GeneticAlgorithm {
         }
         return mergedFittest;
     }
+    */
     
     public static void main(String[] args) {
-        GeneticAlgorithm.trainingTest();
+        //GeneticAlgorithm.testTraining();
+        GeneticAlgorithm.train("TESTPOP1", "TESTPOP0");
     }
 }

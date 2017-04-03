@@ -1,5 +1,10 @@
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
+import static java.util.concurrent.Executors.newFixedThreadPool;
 
 public class Population {
     Individual[] individuals;
@@ -10,33 +15,18 @@ public class Population {
     public static int NUM_PARENTS_PER_REPRODUCTION = 2;
     public static Random RAND_GENERATOR = new Random();
 
-    Population(int pop_size) {
-        this.individuals = new Individual[pop_size];
+    public static ExecutorService threadPool = newFixedThreadPool(GeneticAlgorithm.POP_SIZE);
+    public static Future<?>[] threadTerminationCheckers = new Future<?>[GeneticAlgorithm.POP_SIZE];
+
+    Population() {
+        this.individuals = new Individual[GeneticAlgorithm.POP_SIZE];
         //initialize individuals array
-        for(int i = 0; i < pop_size; i++){
+        for(int i = 0; i < individuals.length; i++){
             this.individuals[i] = new Individual();
         }
-        this.normalizedFitness = new double[pop_size];
+        this.normalizedFitness = new double[GeneticAlgorithm.POP_SIZE];
         //initialize summed fitness array
-        this.summedFitness = new double[pop_size];
-    }
-
-    /**
-     * NOTE: Run this function immediately after instantiation.
-     *
-     * 1. Calculate the fitness value of every individual.
-     * 2. Gather the sums of fitness up to index i for every index i.
-     * 3. Normalize the fitness values so that they all sum to 1.
-     * 4. P.S. individuals[i].getFitness() is not normalized. Normalized
-     *      fitness values are stored in normalizedFitness in the Population.
-     */
-    public void computeNormalizedFitness() {
-        accumulateFitness();
-        // Normalization
-        for (int i = 0; i < individuals.length; i++) {
-            double currFitness = individuals[i].getFitness();
-            normalizedFitness[i] = currFitness / totalFitness;
-        }
+        this.summedFitness = new double[GeneticAlgorithm.POP_SIZE];
     }
 
     /**
@@ -48,17 +38,14 @@ public class Population {
      * Should be parallelized.
      */
     public Population breedNewGeneration() {
-        // TODO: Parallelize this loop
-        for (Individual idv : individuals) {
-            idv.computeFitness();
-        }
+        this.computeAllFitness();
         Arrays.sort(this.individuals);
 
         // get rid of the weakest, replace with strongest
         individuals[individuals.length - 1] = individuals[0];
         this.computeNormalizedFitness(); // prepare for breeding
 
-        Population nextPop = new Population(individuals.length);
+        Population nextPop = new Population();
         // keep the best half of the population
         for (int p = 0; p < individuals.length/2; p++) {
             nextPop.individuals[p] = this.individuals[p];
@@ -123,6 +110,52 @@ public class Population {
         }
         return child;
     }
+    
+    /**
+     * Compute fitness values of all the individuals in parallel
+     */
+    public void computeAllFitness() {
+        // run the threads
+        for (int i = 0; i < individuals.length; i++) {
+            final Individual idv = individuals[i];
+            threadTerminationCheckers[i] = threadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    idv.computeFitness();
+                }
+            });
+        }
+
+        // wait for threads to finish
+        for (int i = 0; i < individuals.length; i++) {
+            try {
+                threadTerminationCheckers[i].get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.getCause();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * NOTE: Run this function immediately after instantiation.
+     *
+     * 1. Calculate the fitness value of every individual.
+     * 2. Gather the sums of fitness up to index i for every index i.
+     * 3. Normalize the fitness values so that they all sum to 1.
+     * 4. P.S. individuals[i].getFitness() is not normalized. Normalized
+     *      fitness values are stored in normalizedFitness in the Population.
+     */
+    public void computeNormalizedFitness() {
+        accumulateFitness();
+        // Normalization
+        for (int i = 0; i < individuals.length; i++) {
+            double currFitness = individuals[i].getFitness();
+            normalizedFitness[i] = currFitness / totalFitness;
+        }
+    }
 
     /**
      * Creates sums of fitness and calculate the total
@@ -161,5 +194,17 @@ public class Population {
             }
         }
         return bestIndividual;
+    }
+    
+    public void loadPopulation(String filePathBase) {
+        for (int i = 0; i < individuals.length; i++) {
+            individuals[i].loadIndividual(filePathBase + "_" + i);
+        }
+    }
+    
+    public void savePopulation(String filePathBase) {
+        for (int i = 0; i < individuals.length; i++) {
+            individuals[i].saveIndividual(filePathBase + "_" + i);
+        }
     }
 }

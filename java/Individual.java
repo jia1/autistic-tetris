@@ -1,4 +1,11 @@
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Represents a single set of weights for the atomic heuristics.
@@ -120,7 +127,7 @@ public class Individual implements Comparable<Individual> {
             //s.drawNext(0, 0);   // [DISPLAY]
             /*
             try {
-                Thread.sleep(100);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -176,8 +183,44 @@ public class Individual implements Comparable<Individual> {
         return builder.toString();
     }
     
+    public void loadIndividual(String filePath) {
+        Path path = Paths.get(filePath);
+        try {
+            Scanner scanner = new Scanner(path, StandardCharsets.UTF_8.name());
+            for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
+                this.weights[i] = scanner.nextDouble();
+            }
+            scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveIndividual(String filePath) {
+        Path path = Paths.get(filePath);
+        BufferedWriter writer;
+        try {
+            writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+            for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
+                writer.write(Double.toString(this.weights[i]));
+                writer.write("\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static void main(String[] args) {
         Individual individual = new Individual();
+        individual.weights = new double[]{-2.525531182203875,
+                                          6.271239133059189,
+                                          -0.06277814190992925,
+                                          5.503462370977285,
+                                          -0.9415663203740668,
+                                          -1.1817283810666752,
+                                          0.2760817349661713,
+                                          -11.331052073843246};
         double score = individual.playGame();
         System.out.println(score);
     }
