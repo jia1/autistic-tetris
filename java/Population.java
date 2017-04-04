@@ -12,8 +12,8 @@ public class Population {
     double[] summedFitness;
     double totalFitness = -1;
 
-    public static int NUM_PARENTS_PER_REPRODUCTION = 2;
-    public static Random RAND_GENERATOR = new Random();
+    public static final int NUM_PARENTS_PER_REPRODUCTION = 2;
+    public static final Random RAND_GENERATOR = new Random();
 
     public static ExecutorService threadPool = newFixedThreadPool(GeneticAlgorithm.POP_SIZE);
     public static Future<?>[] threadTerminationCheckers = new Future<?>[GeneticAlgorithm.POP_SIZE];
@@ -47,14 +47,50 @@ public class Population {
 
         Population nextPop = new Population();
         // keep the best half of the population
-        for (int p = 0; p < individuals.length/2; p++) {
+        int topPortion = individuals.length * 9 / 10;
+        for (int p = 0; p < topPortion; p++) {
             nextPop.individuals[p] = this.individuals[p];
         }
-        // breed the remainder, leave last slot empty for an immigrant
-        for (int p = individuals.length/2; p < individuals.length - 1; p++) {
-            nextPop.individuals[p] = makeChild();
+        
+        // populate the remainder
+        for (int p = topPortion; p < individuals.length; p++) {
+            double chance = RAND_GENERATOR.nextDouble();
+            if (chance < 0.7) {
+                // 70% chance of reproducing
+                Individual[] parents = new Individual[2];
+                int index = 0;
+                while (parents[0] == null) {
+                    if (RAND_GENERATOR.nextDouble() < 0.005) {
+                        parents[0] = this.individuals[index]; 
+                    }
+                    index = (index + 1) % topPortion;
+                }
+                index = 0;
+                while (parents[1] == null) {
+                    if (RAND_GENERATOR.nextDouble() < 0.005) {
+                        parents[1] = this.individuals[index]; 
+                    }
+                    index = (index + 1) % topPortion;
+                }
+                Individual child = reproduce(parents);
+                nextPop.individuals[p] = child;
+            } else if (chance < 0.95 ){
+                // 25% chance of mutating original
+                Individual toMutate = null;
+                int index = 0;
+                while (toMutate == null) {
+                    if (RAND_GENERATOR.nextDouble() < 0.005) {
+                        toMutate = this.individuals[index].clone(); 
+                    }
+                    index = (index + 1) % topPortion;
+                }
+                toMutate.mutate();
+                nextPop.individuals[p] = toMutate;
+            } else {
+                // %5 chance of random individual
+                nextPop.individuals[p] = new Individual();
+            }
         }
-        nextPop.individuals[individuals.length - 1] = new Individual(); // introduce a mexican immigrant
         return nextPop;
     }
 
@@ -194,6 +230,10 @@ public class Population {
             }
         }
         return bestIndividual;
+    }
+    
+    public Individual[] getIndividuals() {
+        return individuals;
     }
     
     public void loadPopulation(String filePathBase) {

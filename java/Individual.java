@@ -15,9 +15,9 @@ public class Individual implements Comparable<Individual> {
     private double fitness = -1;
     private double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
 
-    public static int PROB_PERCENT_MUTATE = 5;
-    public static int RAND_BOUND_MUTATE = 2*100 / PROB_PERCENT_MUTATE;
-    public static Random RAND_GENERATOR = new Random();
+    public static final int PROB_PERCENT_MUTATE = 5;
+    public static final int RAND_BOUND_MUTATE = 2*100 / PROB_PERCENT_MUTATE;
+    public static final Random RAND_GENERATOR = new Random();
 
     public Individual() {
         this.randomize();
@@ -209,6 +209,12 @@ public class Individual implements Comparable<Individual> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public Individual clone() {
+        Individual ret = new Individual();
+        ret.weights = this.weights.clone();
+        return ret;
     }
     
     public static void main(String[] args) {

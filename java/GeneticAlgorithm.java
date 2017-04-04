@@ -6,9 +6,9 @@ public class GeneticAlgorithm {
     Population Best Fitness: 14293.000000
      */
     
-    public static final int NUM_TRAIN_GAMES = 10;
-    public static final int POP_SIZE = 8;
-    public static final int NUM_BREEDING_ITER = 1000;
+    public static final int NUM_TRAIN_GAMES = 5;
+    public static final int POP_SIZE = 25;
+    public static final int NUM_BREEDING_ITER = Integer.MAX_VALUE;
     
     public static Population population = new Population();
     public static Individual[] fittestIndividuals = new Individual[10]; // TODO: maybe no need so many
@@ -36,10 +36,17 @@ public class GeneticAlgorithm {
                 if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
                     overallFittestIndividual = fittestIndividual;
                 }
-                System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nPopulation Best Fitness: %f%n%n",
+                int individualCount = 0;
+                double totalFitness = 0;
+                for (Individual individual : population.getIndividuals()) {
+                    totalFitness += individual.getFitness();
+                    individualCount++;
+                }
+                System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nAverage Fitness: %f%nPopulation Best Fitness: %f%n%n",
                         i,
                         overallFittestIndividual.toString(),
                         overallFittestIndividual.getFitness(),
+                        totalFitness / individualCount,
                         fittestIndividual.getFitness());
             } else {
                 newGeneration = population.breedNewGeneration();
