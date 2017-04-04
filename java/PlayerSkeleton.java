@@ -251,7 +251,11 @@ public class PlayerSkeleton {
     }
     
     public static int maxHoleDepth(ArrayList<Integer> holeDepths) {
-    	return Collections.max(holeDepths); 
+    	if (holeDepths.isEmpty()) {
+    		return 0; 
+    	} else {
+    		return Collections.max(holeDepths); 
+    	}
     }
     
     // =======================================
