@@ -12,7 +12,8 @@ public class PlayerTraining {
     public static final String WEIGHTS_PATH = "weights.txt";
 
     public static void main(String[] args) {
-        GeneticAlgorithm.train("POPULATION0", "POPULATION1");
+        //GeneticAlgorithm.train("POPULATION0", "POPULATION1");
+        GeneticAlgorithm.train("POPULATION1", "POPULATION0");
         double[] bestWeights = GeneticAlgorithm.population.getFittestIndividual().getWeights();
         try {
             System.out.println(Arrays.toString(bestWeights));

@@ -1,3 +1,10 @@
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class GeneticAlgorithm {
     /*
     Iteration 12652
@@ -9,6 +16,8 @@ public class GeneticAlgorithm {
     public static final int NUM_TRAIN_GAMES = 5;
     public static final int POP_SIZE = 50;
     public static final int NUM_BREEDING_ITER = Integer.MAX_VALUE;
+    public static final String WEIGHTS_PATH = "weights.txt";
+    public static final String SECOND_WEIGHTS_PATH = "weights2.txt";
     
     public static Population population = new Population();
     public static Individual[] fittestIndividuals = new Individual[10]; // TODO: maybe no need so many
@@ -23,6 +32,7 @@ public class GeneticAlgorithm {
         for (int i = 0; i < NUM_BREEDING_ITER; i++) {
             Population newGeneration = null;
             boolean isCheckpointTime = i % 25 == 0;
+            boolean useSecondFile = i % 50 == 0;
 
             if (isCheckpointTime) {
                 long startTime = System.nanoTime();
@@ -46,6 +56,15 @@ public class GeneticAlgorithm {
                         i,
                         overallFittestIndividual.getFitness(),
                         totalFitness / individualCount);
+                double[] bestWeights = overallFittestIndividual.getWeights();
+                
+                try {
+					saveWeights(bestWeights, useSecondFile);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					System.out.println("Error writing to weight file");
+					e.printStackTrace();
+				}
             } else {
                 newGeneration = population.breedNewGeneration();
             }
@@ -76,6 +95,21 @@ public class GeneticAlgorithm {
 
             population = newGeneration; // garbage collect the old one
         }
+    }
+    
+    public static void saveWeights(double[] weights, boolean useSecondFile) throws IOException {
+    	Path path;
+    	if(!useSecondFile){
+    		path = Paths.get(WEIGHTS_PATH);
+    	} else {
+    		path = Paths.get(SECOND_WEIGHTS_PATH);
+    	}
+        BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+        for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
+            writer.write(Double.toString(weights[i]));
+            writer.write("\n");
+        }
+        writer.close();
     }
 
     /*
