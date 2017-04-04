@@ -152,9 +152,9 @@ public class Population {
      */
     public void computeAllFitness() {
         //reset to force re-calculation
-        for(Individual currentIndividual : this.individuals){
-            currentIndividual.resetFitness();
-        }
+        //for(Individual currentIndividual : this.individuals){
+        //    currentIndividual.resetFitness();
+        //}
         
         // run the threads
         for (int i = 0; i < individuals.length; i++) {
