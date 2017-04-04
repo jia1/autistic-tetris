@@ -152,7 +152,7 @@ public class PlayerSkeleton {
     	double boardSmoothnessAbs = boardSmoothnessAbsolute(topDiff); 
     	double boardSmoothnessSqr = boardSmoothnessSquared(topDiff); 
     	int maxAdjacentDiff = maxAdjacentDiff(topDiff); 
-    	int numRowsWithHoles = numRowsWithHoles(field, topDiff); 
+    	int numRowsWithHoles = numRowsWithHoles(field, top); 
     	int totalHoleDepths = totalHoleDepths(holeDepths); 
     	int maxHoleDepth = maxHoleDepth(holeDepths); 
     	
