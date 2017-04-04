@@ -7,7 +7,7 @@ public class GeneticAlgorithm {
      */
     
     public static final int NUM_TRAIN_GAMES = 5;
-    public static final int POP_SIZE = 25;
+    public static final int POP_SIZE = 50;
     public static final int NUM_BREEDING_ITER = Integer.MAX_VALUE;
     
     public static Population population = new Population();
@@ -28,7 +28,7 @@ public class GeneticAlgorithm {
                 long startTime = System.nanoTime();
                 newGeneration = population.breedNewGeneration();
                 long endTime = System.nanoTime();
-                System.out.printf("Time Spent: %d ns%n", endTime - startTime);
+                //System.out.printf("Time Spent: %d ns%n", endTime - startTime);
 
                 population.savePopulation(toSavePopFilePathBase);
 
@@ -42,12 +42,10 @@ public class GeneticAlgorithm {
                     totalFitness += individual.getFitness();
                     individualCount++;
                 }
-                System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nAverage Fitness: %f%nPopulation Best Fitness: %f%n%n",
+                System.out.printf("Iteration %d\tBest Fitness: %f\tAverage Fitness: %f%n",
                         i,
-                        overallFittestIndividual.toString(),
                         overallFittestIndividual.getFitness(),
-                        totalFitness / individualCount,
-                        fittestIndividual.getFitness());
+                        totalFitness / individualCount);
             } else {
                 newGeneration = population.breedNewGeneration();
             }
@@ -65,6 +63,11 @@ public class GeneticAlgorithm {
             if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
                 overallFittestIndividual = fittestIndividual;
             }
+            //System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nPopulation Best Fitness: %f%n%n",
+            //        i,
+            //        overallFittestIndividual.toString(),
+            //        overallFittestIndividual.getFitness(),
+            //        fittestIndividual.getFitness());
             System.out.printf("Iteration %d%nBest Weights: %s%nBest Fitness: %f%nPopulation Best Fitness: %f%n%n",
                     i,
                     overallFittestIndividual.toString(),
