@@ -151,6 +151,11 @@ public class Population {
      * Compute fitness values of all the individuals in parallel
      */
     public void computeAllFitness() {
+        //reset to force re-calculation
+        for(Individual currentIndividual : this.individuals){
+            currentIndividual.resetFitness();
+        }
+        
         // run the threads
         for (int i = 0; i < individuals.length; i++) {
             final Individual idv = individuals[i];

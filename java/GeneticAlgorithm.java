@@ -29,7 +29,7 @@ public class GeneticAlgorithm {
             population.loadPopulation(toLoadPopFilePathBase);
         }
 
-        for (int i = 0; i < NUM_BREEDING_ITER; i++) {
+        for (int i = 0; i < NUM_BREEDING_ITER; i++) {            
             Population newGeneration = null;
             boolean isCheckpointTime = i % 25 == 0;
             boolean useSecondFile = i % 50 == 0;

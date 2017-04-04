@@ -160,6 +160,13 @@ public class Individual implements Comparable<Individual> {
     public boolean hasComputedFitness() {
         return fitness >= 0; // i.e. cleared 0 or more rows
     }
+    
+    /**
+     * Resets the Individual's fitness to 0
+     */
+    public void resetFitness() {
+        fitness = -1;
+    }
 
     @Override
     public int compareTo(Individual o) {
