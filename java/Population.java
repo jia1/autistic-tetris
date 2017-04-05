@@ -278,7 +278,7 @@ public class Population {
             writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
             for (int j = 0; j < this.individuals.length; j++) {
                 writer.write("Organism");
-                writer.write(j + 1);
+                writer.write(Integer.toString(j + 1));
                 writer.write("\t");
                 for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
                     writer.write(Double.toString(this.individuals[j].getWeight(i)));

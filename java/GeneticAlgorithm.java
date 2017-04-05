@@ -140,7 +140,7 @@ public class GeneticAlgorithm {
         BufferedWriter writer;
         try {
             writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-            writer.write(iterationCount);
+            writer.write(Integer.toString(iterationCount));
             writer.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
