@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class GeneticAlgorithm {
     /*
@@ -18,6 +19,7 @@ public class GeneticAlgorithm {
     public static final int NUM_BREEDING_ITER = Integer.MAX_VALUE;
     public static final String WEIGHTS_PATH = "weights.txt";
     public static final String SECOND_WEIGHTS_PATH = "weights2.txt";
+    public static final String ITERATION_PATH = "iteration.txt";
     
     public static Population population = new Population();
     public static Individual[] fittestIndividuals = new Individual[10]; // TODO: maybe no need so many
@@ -25,14 +27,17 @@ public class GeneticAlgorithm {
 
 
     public static void train(String toLoadPopFilePathBase, String toSavePopFilePathBase) {
+        int lastSavedIterationCount = loadIterationCount();
         if (toLoadPopFilePathBase != null) {
-            population.loadPopulation(toLoadPopFilePathBase);
+            //population.loadPopulation(toLoadPopFilePathBase);
+            population.unifiedLoadPopulation(toLoadPopFilePathBase, lastSavedIterationCount);
         }
 
-        for (int i = 0; i < NUM_BREEDING_ITER; i++) {            
+        for (int i = lastSavedIterationCount; i < NUM_BREEDING_ITER; i++) {            
             Population newGeneration = null;
             boolean isCheckpointTime = i % 25 == 0;
-            boolean useSecondFile = i % 50 == 0;
+            boolean useSecondFile = i % 100 == 0;
+            boolean toSavePopulation = i % 100 == 0;;
 
             if (isCheckpointTime) {
                 long startTime = System.nanoTime();
@@ -40,7 +45,7 @@ public class GeneticAlgorithm {
                 long endTime = System.nanoTime();
                 //System.out.printf("Time Spent: %d ns%n", endTime - startTime);
 
-                population.savePopulation(toSavePopFilePathBase);
+                //population.savePopulation(toSavePopFilePathBase);
 
                 Individual fittestIndividual = population.getFittestIndividual();
                 if (overallFittestIndividual == null || fittestIndividual.getFitness() > overallFittestIndividual.getFitness()) {
@@ -57,6 +62,11 @@ public class GeneticAlgorithm {
                         overallFittestIndividual.getFitness(),
                         totalFitness / individualCount);
                 double[] bestWeights = overallFittestIndividual.getWeights();
+                //saving population to unified file once every 100 iterations
+                if (toSavePopulation) {
+                    population.unifiedSavePopulation(toSavePopFilePathBase, i);
+                    saveIterationCount(i);
+                }
                 
                 try {
 					saveWeights(bestWeights, useSecondFile);
@@ -110,6 +120,32 @@ public class GeneticAlgorithm {
             writer.write("\n");
         }
         writer.close();
+    }
+    
+    public static int loadIterationCount() {
+        Path path = Paths.get(ITERATION_PATH);
+        int iterationCount = 0;
+        try {
+            Scanner scanner = new Scanner(path, StandardCharsets.UTF_8.name());
+            iterationCount = scanner.nextInt();
+            scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return iterationCount;
+    }
+    
+    public static void saveIterationCount(int iterationCount) {
+        Path path = Paths.get(ITERATION_PATH);
+        BufferedWriter writer;
+        try {
+            writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+            writer.write(iterationCount);
+            writer.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /*

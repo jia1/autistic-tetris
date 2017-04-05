@@ -1,10 +1,18 @@
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Population {
     Individual[] individuals;
@@ -244,6 +252,43 @@ public class Population {
     public void loadPopulation(String filePathBase) {
         for (int i = 0; i < individuals.length; i++) {
             individuals[i].loadIndividual(filePathBase + "_" + i);
+        }
+    }
+    
+    public void unifiedLoadPopulation(String filePath, int iterationNum) {
+        Path path = Paths.get(filePath + Integer.toString(iterationNum));
+        try {
+            Scanner scanner = new Scanner(path, StandardCharsets.UTF_8.name());
+            for (int j = 0; j < this.individuals.length; j++) {
+                String[] currentOrganismArray = scanner.nextLine().split("\t");
+                for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
+                    this.individuals[j].setWeight(i, Double.parseDouble(currentOrganismArray[i + 1]));
+                }
+            }
+            scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void unifiedSavePopulation(String filePath, int iterationNum) {
+        Path path = Paths.get(filePath + Integer.toString(iterationNum));
+        BufferedWriter writer;
+        try {
+            writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+            for (int j = 0; j < this.individuals.length; j++) {
+                writer.write("Organism");
+                writer.write(j + 1);
+                writer.write("\t");
+                for (int i = 0; i < PlayerSkeleton.Constants.FEATURE_COUNT; i++) {
+                    writer.write(Double.toString(this.individuals[j].getWeight(i)));
+                    writer.write("\t");
+                }
+                writer.write("\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     
