@@ -154,6 +154,6 @@ public class GeneticAlgorithm {
     
     public static void main(String[] args) {
         //GeneticAlgorithm.testTraining();
-        GeneticAlgorithm.train("TESTPOP1", "TESTPOP0");
+        GeneticAlgorithm.train(null, "TESTPOP0");
     }
 }

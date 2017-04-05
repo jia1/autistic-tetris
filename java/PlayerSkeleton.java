@@ -6,16 +6,19 @@ import java.util.Collections;
 
 public class PlayerSkeleton {
 
-	public static int WEIGHT_INDEX_NUM_HOLES = 0; 
-	public static int WEIGHT_INDEX_NUM_ROWS_CLEARED = 1; 
-	public static int WEIGHT_INDEX_MAX_HEIGHT = 2; 
-	public static int WEIGHT_INDEX_AVG_HEIGHT = 3; 
-	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS = 4; 
-	public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR = 5; 
-	public static int WEIGHT_INDEX_MAX_ADJ_DIFF = 6;
-	public static int WEIGHT_INDEX_NUM_ROWS_WITH_HOLES = 7; 
-	public static int WEIGHT_INDEX_TOTAL_HOLE_DEPTHS = 8; 
-	public static int WEIGHT_INDEX_MAX_HOLE_DEPTHS = 9; 
+    public static int WEIGHT_INDEX_NUM_HOLES = 0; 
+    public static int WEIGHT_INDEX_NUM_ROWS_CLEARED = 1; 
+    public static int WEIGHT_INDEX_MAX_HEIGHT = 2; 
+    public static int WEIGHT_INDEX_AVG_HEIGHT = 3; 
+    public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS = 4; 
+    public static int WEIGHT_INDEX_BOARD_SMOOTHNESS_SQR = 5; 
+    public static int WEIGHT_INDEX_MAX_ADJ_DIFF = 6;
+    public static int WEIGHT_INDEX_NUM_ROWS_WITH_HOLES = 7; 
+    public static int WEIGHT_INDEX_TOTAL_HOLE_DEPTHS = 8; 
+    public static int WEIGHT_INDEX_MAX_HOLE_DEPTHS = 9; 
+    public static int WEIGHT_INDEX_IS_LOST = 10; 
+    public static int WEIGHT_INDEX_TOTAL_BAD_HOLES = 11; 
+    public static int WEIGHT_INDEX_MAX_BAD_HOLES = 12; 
 	
     // Picks a move to carry out based on the current state of the board.
     //
@@ -144,21 +147,24 @@ public class PlayerSkeleton {
     		}
     	}
     
-    	// calculate each feature 
-    	int numHoles = numHoles(field, top); 
-    	int numRowsCleared = countCompletedRows(field);  
-    	int maxHeight = maxHeight(top, numRowsCleared); 
-    	double avgHeight = averageHeight(top, numRowsCleared);
-    	double boardSmoothnessAbs = boardSmoothnessAbsolute(topDiff); 
-    	double boardSmoothnessSqr = boardSmoothnessSquared(topDiff); 
-    	int maxAdjacentDiff = maxAdjacentDiff(topDiff); 
-    	int numRowsWithHoles = numRowsWithHoles(field, top); 
-    	int totalHoleDepths = totalHoleDepths(holeDepths); 
-    	int maxHoleDepth = maxHoleDepth(holeDepths); 
-    	
-    	// calculate weighted sum of features 
+        // calculate each feature 
+        int numHoles = numHoles(field, top); 
+        int numRowsCleared = countCompletedRows(field);  
+        int maxHeight = maxHeight(top, numRowsCleared); 
+        double avgHeight = averageHeight(top, numRowsCleared);
+        double boardSmoothnessAbs = boardSmoothnessAbsolute(topDiff); 
+        double boardSmoothnessSqr = boardSmoothnessSquared(topDiff); 
+        int maxAdjacentDiff = maxAdjacentDiff(topDiff); 
+        int numRowsWithHoles = numRowsWithHoles(field, top); 
+        int totalHoleDepths = totalHoleDepths(holeDepths); 
+        int maxHoleDepth = maxHoleDepth(holeDepths); 
+        int isLost = boardIsLost(top); 
+        int totalBadHoles = boardTotalBadHoles(top); 
+        int maxBadHoles = boardMaxBadHoles(top); 
+        
+        // calculate weighted sum of features 
         return numHoles * weights[WEIGHT_INDEX_NUM_HOLES] 
-        	 + numRowsCleared * weights[WEIGHT_INDEX_NUM_ROWS_CLEARED] 
+             + numRowsCleared * weights[WEIGHT_INDEX_NUM_ROWS_CLEARED] 
              + maxHeight * weights[WEIGHT_INDEX_MAX_HEIGHT]
              + avgHeight * weights[WEIGHT_INDEX_AVG_HEIGHT]
              + boardSmoothnessAbs * weights[WEIGHT_INDEX_BOARD_SMOOTHNESS_ABS]
@@ -166,7 +172,10 @@ public class PlayerSkeleton {
              + maxAdjacentDiff * weights[WEIGHT_INDEX_MAX_ADJ_DIFF]
              + numRowsWithHoles * weights[WEIGHT_INDEX_NUM_ROWS_WITH_HOLES]
              + totalHoleDepths * weights[WEIGHT_INDEX_TOTAL_HOLE_DEPTHS]
-             + maxHoleDepth * weights[WEIGHT_INDEX_MAX_HOLE_DEPTHS];
+             + maxHoleDepth * weights[WEIGHT_INDEX_MAX_HOLE_DEPTHS]
+             + isLost * weights[WEIGHT_INDEX_IS_LOST]
+             + totalBadHoles * weights[WEIGHT_INDEX_TOTAL_BAD_HOLES]
+             + maxBadHoles * weights[WEIGHT_INDEX_MAX_BAD_HOLES];
     }
     
     // calculate sum of size of holes 
@@ -256,6 +265,51 @@ public class PlayerSkeleton {
     	} else {
     		return Collections.max(holeDepths); 
     	}
+    }
+    
+    public static int boardIsLost(int[] top) {
+        for (int i = 0; i < top.length; i++) {
+            if (top[i] >= Constants.ROWS) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+    
+    public static int boardTotalBadHoles(int[] top) {
+        int total = 0;
+        for (int i = 0; i < top.length; i++) {
+            int leftEdge = Constants.ROWS;
+            int rightEdge = Constants.ROWS;
+            if (i > 0) {
+                leftEdge = top[i - 1];
+            }
+            if (i + 1 < top.length) {
+                rightEdge = top[i + 1];
+            }
+            if (leftEdge - top[i] >= 2 && rightEdge - top[i] >= 2) {
+                total += Math.min(leftEdge - top[i], rightEdge - top[i]);
+            }
+        }
+        return total;
+    }
+    
+    public static int boardMaxBadHoles(int[] top) {
+        int max = 0;
+        for (int i = 0; i < top.length; i++) {
+            int leftEdge = Constants.ROWS;
+            int rightEdge = Constants.ROWS;
+            if (i > 0) {
+                leftEdge = top[i - 1];
+            }
+            if (i + 1 < top.length) {
+                rightEdge = top[i + 1];
+            }
+            if (leftEdge - top[i] >= 2 && rightEdge - top[i] >= 2) {
+                max += Math.max(max, Math.min(leftEdge - top[i], rightEdge - top[i]));
+            }
+        }
+        return max;
     }
     
     // =======================================
@@ -386,7 +440,7 @@ public class PlayerSkeleton {
 
  public static class Constants {
 
-     public static final int FEATURE_COUNT = 10;
+     public static final int FEATURE_COUNT = 13;
 
      public static final int SEARCH_TRIALS = 100;
      public static final int SEARCH_DEPTH = 5;

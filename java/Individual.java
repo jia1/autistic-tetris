@@ -64,8 +64,13 @@ public class Individual implements Comparable<Individual> {
      * This is useful as an initializer.
      */
     public void randomize() {
+        boolean[] isBad = new boolean[] { true, false, true, true, true, true, true, true, true, true, true, true, true};
         for (int i = 0; i < weights.length; i++) {
-            this.setWeight(i, RAND_GENERATOR.nextDouble() * 2 - 1);
+            double weight = RAND_GENERATOR.nextDouble();
+            if (isBad[i]) {
+                weight = -weight;
+            }
+            this.setWeight(i, weight);
         }
     }
 
