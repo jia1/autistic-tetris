@@ -54,8 +54,8 @@ public class Population {
         this.computeNormalizedFitness(); // prepare for breeding
 
         Population nextPop = new Population();
-        // keep the best half of the population
-        int topPortion = individuals.length * 9 / 10;
+        // keep the best 10 percent of the population
+        int topPortion = individuals.length * 1 / 10;
         for (int p = 0; p < topPortion; p++) {
             nextPop.individuals[p] = this.individuals[p];
         }
@@ -63,8 +63,8 @@ public class Population {
         // populate the remainder
         for (int p = topPortion; p < individuals.length; p++) {
             double chance = RAND_GENERATOR.nextDouble();
-            if (chance < 0.7) {
-                // 70% chance of reproducing
+            if (chance < 0.96) {
+                // 96% chance of reproducing
                 Individual[] parents = new Individual[2];
                 int index = 0;
                 while (parents[0] == null) {
@@ -82,8 +82,8 @@ public class Population {
                 }
                 Individual child = reproduce(parents);
                 nextPop.individuals[p] = child;
-            } else if (chance < 0.95 ){
-                // 25% chance of mutating original
+            } else if (chance > 0.99 ){
+                // 1% chance of mutating original
                 Individual toMutate = null;
                 int index = 0;
                 while (toMutate == null) {
@@ -95,7 +95,7 @@ public class Population {
                 toMutate.mutate();
                 nextPop.individuals[p] = toMutate;
             } else {
-                // %5 chance of random individual
+                // 3% chance of random individual
                 nextPop.individuals[p] = new Individual();
             }
         }

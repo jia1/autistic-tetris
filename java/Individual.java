@@ -15,7 +15,7 @@ public class Individual implements Comparable<Individual> {
     private double fitness = -1;
     private double[] weights = new double[PlayerSkeleton.Constants.FEATURE_COUNT];
 
-    public static final int PROB_PERCENT_MUTATE = 5;
+    public static final int PROB_PERCENT_MUTATE = 1;
     public static final int RAND_BOUND_MUTATE = 2*100 / PROB_PERCENT_MUTATE;
     public static final Random RAND_GENERATOR = new Random();
 
@@ -154,7 +154,7 @@ public class Individual implements Comparable<Individual> {
             weights[indexToMutate] += mutationAmount;
         }
         */
-        weights[RAND_GENERATOR.nextInt(weights.length)] += 10 * (2*RAND_GENERATOR.nextDouble() - 1);
+        weights[RAND_GENERATOR.nextInt(weights.length)] += 20.0 * (2.0*RAND_GENERATOR.nextDouble() - 1.0);
     }
 
     /**

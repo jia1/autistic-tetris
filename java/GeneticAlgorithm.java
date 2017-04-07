@@ -14,7 +14,7 @@ public class GeneticAlgorithm {
     Population Best Fitness: 14293.000000
      */
     
-    public static final int NUM_TRAIN_GAMES = 5;
+    public static final int NUM_TRAIN_GAMES = 3;
     public static final int POP_SIZE = 50;
     public static final int NUM_BREEDING_ITER = Integer.MAX_VALUE;
     public static final String WEIGHTS_PATH = "weights.txt";
