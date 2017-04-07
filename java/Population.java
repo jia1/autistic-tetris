@@ -46,6 +46,7 @@ public class Population {
      * Should be parallelized.
      */
     public Population breedNewGeneration() {
+        this.resetAllFitness();
         this.computeAllFitness();
         Arrays.sort(this.individuals);
 
@@ -153,6 +154,14 @@ public class Population {
             child.setWeight(i, alpha * parents[0].getWeight(i) + (1 - alpha) * parents[1].getWeight(i));
         }
         return child;
+    }
+    /**
+     * Resets the entire population's fitness because some individual could have gotten lucky
+     */
+    public void resetAllFitness(){
+        for(Individual idv : individuals){
+            idv.resetFitness();
+        }
     }
     
     /**
