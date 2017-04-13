@@ -182,7 +182,7 @@ public class PlayerSkeleton {
         int numRowsWithHoles = numRowsWithHoles(field, top); 
         int totalHoleDepths = totalHoleDepths(holeDepths); 
         int maxHoleDepth = maxHoleDepth(holeDepths); 
-        int isLost = boardIsLost(top); 
+        int isLost = boardIsLost(top, numRowsCleared); 
         int totalBadHoles = boardTotalBadHoles(top); 
         int maxBadHoles = boardMaxBadHoles(top); 
         
@@ -291,9 +291,9 @@ public class PlayerSkeleton {
     	}
     }
     
-    public static int boardIsLost(int[] top) {
+    public static int boardIsLost(int[] top, int numRowsCleared) {
         for (int i = 0; i < top.length; i++) {
-            if (top[i] >= Constants.ROWS) {
+            if (top[i] - numRowsCleared >= Constants.ROWS) {
                 return 1;
             }
         }
