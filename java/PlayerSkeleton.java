@@ -49,6 +49,30 @@ public class PlayerSkeleton {
         }
         return bestMove;
     }
+    
+    public int pickMoveNormal(State s, int[][] legalMoves) {
+        int[][] field = copyField(s.getField());
+        // Convert field to 0s and 1s
+        for (int row = 0; row < field.length; row++) {
+            for (int col = 0; col < field[row].length; col++) {
+                field[row][col] = field[row][col] == 0 ? 0 : 1;
+            }
+        }
+        int nextPiece = s.getNextPiece();
+        double bestScore = Double.NEGATIVE_INFINITY;
+        int bestMove = 0;
+        // Among all possible moves, find the best move which gives
+        // rise to the highest meta-heuristic score.
+        for (int i = 0; i < legalMoves.length; i++) {
+            int[][] newField = applyMove(copyField(field), nextPiece, legalMoves[i]);
+            double score = heuristic(newField);
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = i;
+            }
+        }
+        return bestMove;
+    }
 
     // =======================================
     // === Heuristics ===
@@ -96,7 +120,7 @@ public class PlayerSkeleton {
         int[][] legalMoves = Constants.LEGAL_MOVES[piece];
 
         double bestScore = Double.NEGATIVE_INFINITY;
-        int[][] bestField = null;
+        int[][] bestField = applyMove(copyField(field), piece, legalMoves[0]);
 
         for (int[] move : legalMoves) {
             int[][] newField = applyMove(copyField(field), piece, move);
@@ -442,13 +466,27 @@ public class PlayerSkeleton {
 
      public static final int FEATURE_COUNT = 13;
 
-     public static final int SEARCH_TRIALS = 100;
-     public static final int SEARCH_DEPTH = 5;
+     public static final int SEARCH_TRIALS = 10;
+     public static final int SEARCH_DEPTH = 1000;
 
      // IMPORTANT: Replace with completed weights before submission
      // public static double[] WEIGHTS =
      // new double[]{0, 0, 0, 0, 0, 0, 0, 0};
-     public static double[] WEIGHTS = PlayerTraining.loadWeights();
+     public static double[] WEIGHTS = new double[]{
+             -0.6192624373052722,
+              0.619743384856208,
+             -0.31666167506246745,
+             -0.5787904492952959,
+             -0.6422645289339092,
+             -0.6033026399287239,
+             -0.054078185495729625,
+             -0.7122135604319182,
+             -0.5339577158864977,
+             -0.40915508748729523,
+             -0.6364376851349065,
+             -0.33932147515140043,
+             -0.09947323704230304
+     };
 
      public static final int COLS = 10;
      public static final int ROWS = 21;
