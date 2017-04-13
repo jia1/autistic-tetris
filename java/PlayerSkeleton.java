@@ -139,9 +139,9 @@ public class PlayerSkeleton {
     // if the resultant field terminates the game, value is -infinity
     // else calculate heuristic as per normal 
     public double heuristic(int[][] field) {
-    	if (field[0][0] == -1) {
-            return Double.NEGATIVE_INFINITY;
-        }
+//    	if (field[0][0] == -1) {
+//            return Double.NEGATIVE_INFINITY;
+//        }
     	
         return heuristic(field, weights);
     }
@@ -439,15 +439,16 @@ public class PlayerSkeleton {
         new TFrame(s);
         PlayerSkeleton p = new PlayerSkeleton(Constants.WEIGHTS);
         while (!s.hasLost()) {
-            s.makeMove(p.pickMove(s, s.legalMoves()));
-            s.draw();
-            s.drawNext(0, 0);
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            s.makeMove(p.pickMoveNormal(s, s.legalMoves()));
+//            s.draw();
+//            s.drawNext(0, 0);
+//            try {
+//                Thread.sleep(300);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
+        s.draw();
         System.out.println("You have completed " + s.getRowsCleared() + " rows.");
     }
 
@@ -473,17 +474,17 @@ public class PlayerSkeleton {
      // public static double[] WEIGHTS =
      // new double[]{0, 0, 0, 0, 0, 0, 0, 0};
      public static double[] WEIGHTS = new double[]{
-             -0.6192624373052722,
-              0.619743384856208,
-             -0.31666167506246745,
-             -0.5787904492952959,
+             -1.7851855342334024,
+             1.4138726176225629,
+             -0.051962392158941606,
+             -0.12090744319379954,
              -0.6422645289339092,
              -0.6033026399287239,
              -0.054078185495729625,
              -0.7122135604319182,
              -0.5339577158864977,
              -0.40915508748729523,
-             -0.6364376851349065,
+             -0.6249287636118577,
              -0.33932147515140043,
              -0.09947323704230304
      };
